@@ -1,0 +1,3 @@
+python3 solver/ltc.py --mesh-file="cfdData/mesh_w_elev_cvt_7.nc" --init-file="cfdData/tsunami_cvt_7.nc" --radius=6371220. --test-case=2 --wave-xmid=165. --wave-ymid=40.0
+
+python3 solver/swe.py --mpas-file=cfdData/tsunami_cvt_7.nc --time-step=300. --num-steps=120 --save-freq=10 --stat-freq=10 --loglaw-z0=0.0025 --loglaw-lo=0.0010 --loglaw-hi=1.0 --du-damp-2=2.250E+04
