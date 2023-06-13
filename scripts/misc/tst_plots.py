@@ -6,7 +6,8 @@ import cartopy.crs as ccrs
 from warnings import filterwarnings
 filterwarnings(action='ignore', category=DeprecationWarning, message='`np.bool` is a deprecated alias')
 
-proj = "/Users/emcdugald/projects/aml_2023/batch-swe/"
+#proj = "/Users/emcdugald/projects/aml_2023/batch-swe/"
+proj = "/Users/edwardmcdugald/batch-swe/"
 fname = "out_tsunami_cvt_7.nc"
 
 print(proj+"cfdData/"+fname)

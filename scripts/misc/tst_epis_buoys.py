@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 import pandas as pd
 
-proj_pref = "/Users/emcdugald/projects/aml_2023/batch-swe/"
+#proj_pref = "/Users/emcdugald/projects/aml_2023/batch-swe/"
+proj_pref = "/Users/edwardmcdugald/batch-swe/"
 fname = "eqs_gt_8.csv"
 epi_df = pd.read_csv(proj_pref+"csvData/"+fname, sep=',')
 #lats = epi_df['latitude'].to_numpy()*np.pi/180.
