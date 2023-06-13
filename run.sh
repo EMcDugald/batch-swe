@@ -10,7 +10,7 @@ for ((i=1; i<=$num_runs; i++))
 do
     echo "Running scripts - Iteration $i"
 #    params=$(python random_input_generator.py)
-    params=$(python3 -c 'from solver/epi_sample import get_epi; print(get_epi())')
+    params=$(python3 -c 'from epi_sample import get_epi; print(get_epi())')
     IFS=' ' read -r epi_long epi_lat <<< "$params"
 
     echo "i: $i"

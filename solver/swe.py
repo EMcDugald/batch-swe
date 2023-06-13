@@ -41,10 +41,13 @@ def swe(cnfg):
 
     name = cnfg.mpas_file
     path, file = os.path.split(name)
-    ctr = cnfg.counter
-    epi_long = cnfg.epi_long
-    epi_lat = cnfg.epi_lat
-    save = os.path.join(path, str(ctr)+"_"+str(epi_long)+"_"+str(epi_lat)+".nc")
+    if cnfg.counter:
+        ctr = cnfg.counter
+        epi_long = cnfg.epi_long
+        epi_lat = cnfg.epi_lat
+        save = os.path.join(path, str(ctr) + "_" + str(epi_long) + "_" + str(epi_lat) + ".nc")
+    else:
+        save = save = os.path.join(path, "out_" + file)
 
     print("Loading input assets...")
     
@@ -458,15 +461,15 @@ if (__name__ == "__main__"):
 
     parser.add_argument(
         "--counter", dest="counter", type=int,
-        required=True, help="Records the current run count.")
+        required=False, help="Records the current run count.")
 
     parser.add_argument(
         "--wave-xmid", dest="epi_long", type=float,
-        required=True, help="Longitude coordinate of epicenter in initial condition")
+        required=False, help="Longitude coordinate of epicenter in initial condition")
 
     parser.add_argument(
         "--wave-ymid", dest="epi_lat", type=float,
-        required=True, help="Latitude coordinate of epicenter in initial condition")
+        required=False, help="Latitude coordinate of epicenter in initial condition")
 
     parser.add_argument(
         "--integrate", dest="integrate", type=str,

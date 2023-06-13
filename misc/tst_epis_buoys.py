@@ -4,11 +4,11 @@
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 import pandas as pd
+import os
 
-#proj_pref = "/Users/emcdugald/projects/aml_2023/batch-swe/"
-proj_pref = "/Users/edwardmcdugald/batch-swe/"
+proj = os.path.normpath(os.getcwd() + os.sep + os.pardir)
 fname = "eqs_gt_8.csv"
-epi_df = pd.read_csv(proj_pref+"csvData/"+fname, sep=',')
+epi_df = pd.read_csv(proj+"/csvData/"+fname, sep=',')
 #lats = epi_df['latitude'].to_numpy()*np.pi/180.
 #lons = epi_df['longitude'].to_numpy()*np.pi/180.
 
@@ -21,10 +21,10 @@ ax.set_global()
 ax.coastlines(resolution='110m', color='black', linewidth=2)
 im = ax.scatter(lons,lats,c=mags,cmap='viridis',alpha=.5,transform=ccrs.PlateCarree())
 cb = plt.colorbar(im)
-plt.savefig(proj_pref+"figs/"+"epis_1.png")
+plt.savefig(proj+"/figs/"+"epis_1.png")
 
 fname = "DART_locs.csv"
-buoys_df = pd.read_csv(proj_pref+"csvData/"+fname, sep=',')
+buoys_df = pd.read_csv(proj+"/csvData/"+fname, sep=',')
 lats = buoys_df['latitude'].to_numpy()
 lons = buoys_df['longitude'].to_numpy()
 
@@ -33,4 +33,4 @@ ax2 = plt.axes(projection=ccrs.PlateCarree())
 ax2.set_global()
 ax2.coastlines(resolution='110m', color='black', linewidth=2)
 ax2.scatter(lons,lats,c='r',alpha=.5,transform=ccrs.PlateCarree())
-plt.savefig(proj_pref+"figs/"+"buoys_1.png")
+plt.savefig(proj+"/figs/"+"buoys_1.png")

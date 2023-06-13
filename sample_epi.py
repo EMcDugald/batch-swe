@@ -1,10 +1,10 @@
 import pandas as pd
 import numpy as np
+import os
 
 
 def get_epi():
-    #dir = "/Users/emcdugald/projects/aml_2023/batch-swe/csvData/"
-    dir = "/Users/edwardmcdugald/batch-swe/csvData/"
+    dir = os.getcwd()+"/csvData/"
     fname = "eqs_gt_8.csv"
     epi_df = pd.read_csv(dir+fname, sep=',')
     locs = np.zeros((len(epi_df), 2))
