@@ -10,8 +10,8 @@ filterwarnings(action='ignore', category=DeprecationWarning, message='`np.bool` 
 proj = os.path.normpath(os.getcwd() + os.sep + os.pardir)
 fname = "out_tsunami_cvt_7.nc"
 
-print(proj+"/cfdData/"+fname)
-dataset = netcdf_dataset(proj+"/cfdData/"+fname)
+print(proj+"/cdfData/"+fname)
+dataset = netcdf_dataset(proj+"/cdfData/"+fname)
 
 lats = dataset.variables['latCell'][:]
 lons = dataset.variables['lonCell'][:]

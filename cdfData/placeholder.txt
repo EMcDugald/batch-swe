@@ -1,0 +1,1 @@
+Directory should always have an underlyling mesh file for earth's surface. other .nc files can be stored here optionally
