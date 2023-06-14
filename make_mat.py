@@ -18,5 +18,10 @@ lons = dataset.variables['lonCell'][:].data
 lats = dataset.variables['latCell'][:].data
 zt = dataset.variables['zt_cell'][:].data
 ke = dataset.variables['ke_cell'][:].data
+# lon_edges = dataset.variables['lonEdge'][:].data
+# lat_edges = dataset.variables['latEdge'][:].data
+# nrml_edge_v = dataset.variables['uu_edge'][:].data
 mdict = {"longitude": lons, "latitude": lats, "zt": zt, "ke": ke}
+#mdict = {"longitude": lons, "latitude": lats, "zt": zt, "ke": ke, "lon_edges": lon_edges, "lat_edges": lat_edges, "nrml_edge_v": nrml_edge_v}
 sio.savemat(mat_file,mdict)
+

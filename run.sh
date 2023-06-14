@@ -30,8 +30,8 @@ do
     python solver/swe.py --mpas-file=$init_file \
      --time-step=300. \
      --num-steps=120 \
-     --save-freq=10 \
-     --stat-freq=10 \
+     --save-freq=2 \
+     --stat-freq=2 \
      --loglaw-z0=0.0025 \
      --loglaw-lo=0.0010 \
      --loglaw-hi=1.0 \
