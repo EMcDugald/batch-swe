@@ -460,8 +460,8 @@ if (__name__ == "__main__"):
         required=True, help="Number of time steps.")
 
     parser.add_argument(
-        "--counter", dest="counter", type=int,
-        required=False, help="Records the current run count.")
+        "--counter", dest="counter", type=str,
+        required=False, help="Appends run number to out file")
 
     parser.add_argument(
         "--wave-xmid", dest="epi_long", type=float,
