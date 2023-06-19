@@ -27,12 +27,6 @@ for i in range(len(data_dir)-1):
     signal_maxes = np.amax(abs_deriv, axis=1)
     signal_max_inds = signal_maxes.argsort()[-10:]
 
-    # fig, axs = plt.subplots(10)
-    # plot_ctr = 0
-    # for idx in signal_max_inds:
-    #     axs[plot_ctr].plot(t,signals[idx])
-    #     plot_ctr += 1
-
     fig, axs = plt.subplots(nrows=5,ncols=2)
     for ax, idx in zip(axs.ravel(),signal_max_inds):
         ax.plot(t, signals[idx])

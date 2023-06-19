@@ -4,8 +4,8 @@
 mesh_file="cdfData/mesh_w_elev_cvt_7.nc"
 init_file="cdfData/initial_condition.nc"
 delete_nc=$1 #pass 1 if you want to save .nc files, 0 otherwise
-epi_long_arr=$(python3 -c 'from sample_epi import get_lons; print(str(get_lons()).replace("[","(").replace("]",")").replace("\n",""))')
-epi_lat_arr=$(python3 -c 'from sample_epi import get_lats; print(str(get_lats()).replace("[","(").replace("]",")").replace("\n",""))')
+epi_long_arr=($(python3 -c 'from sample_epi import get_lons; print(str(get_lons()).replace("[","").replace("]","").replace("\n",""))'))
+epi_lat_arr=($(python3 -c 'from sample_epi import get_lats; print(str(get_lats()).replace("[","").replace("]","").replace("\n",""))'))
 num_runs=${#epi_long_arr[@]}
 
 for ((i=1; i<=$num_runs; i++))
@@ -45,7 +45,7 @@ do
     out_nc="cdfData/"$i_pad"_"$epi_long"_"$epi_lat".nc"
     echo "out nc: $out_nc"
 
-    python make_mat.py $i_pad $epi_long $epi_lat
+    #python make_mat.py $i_pad $epi_long $epi_lat
 
     # Delete initial condition file before next run
     rm $init_file

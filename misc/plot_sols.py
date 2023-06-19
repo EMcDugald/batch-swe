@@ -2,12 +2,11 @@ import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 import os
 import scipy.io as sio
-from matplotlib import cm
 
 from warnings import filterwarnings
 filterwarnings(action='ignore', category=DeprecationWarning, message='`np.bool` is a deprecated alias')
 
-for i in range(5):
+for i in range(11):
     for t in [1,51,101,151,200]:
         print(i,t)
         proj = os.path.normpath(os.getcwd() + os.sep + os.pardir)
