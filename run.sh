@@ -45,7 +45,7 @@ do
     out_nc="cdfData/"$i_pad"_"$epi_long"_"$epi_lat".nc"
     echo "out nc: $out_nc"
 
-    #python make_mat.py $i_pad $epi_long $epi_lat
+    python make_mat.py $i_pad $epi_long $epi_lat
 
     # Delete initial condition file before next run
     rm $init_file
