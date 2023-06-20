@@ -16,3 +16,6 @@ run_fixed_epis.sh will generate data depending on a list of longiutde,latitude v
 The scripts will call the SWE solver, which will generate .nc files. After the .nc is made, a python script is called to generate a .mat file containing the longitude/latitude coordinates, time series for the wave height, velocity divergence, and kinetic energy, and nearest longitude/latitude coordinates to the DART sensors.
 If the .nc files are not needed, either script can be run with a 0/1 flag. 
 Running ./run.sh 0 or ./run_fixed_epis.sh 0 will delete the .nc files. To keep the files, run with the flag set to 1.
+
+Helpful Note: The dart buoys and epicenter locations are expressed in degrees, while the solver uses radians.
+Additionally, the longitude values cooresponding to [-180,0] must be remapped to [180,360] before converting to radians.

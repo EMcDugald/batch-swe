@@ -49,20 +49,19 @@ mdict = {"longitude": sim_lons, "latitude": sim_lats,
 sio.savemat(mat_file,mdict)
 
 
-import matplotlib.pyplot as plt
-import cartopy.crs as ccrs
-proj = os.getcwd()
-fig = plt.figure()
-ax2 = plt.axes(projection=ccrs.PlateCarree())
-ax2.set_global()
-ax2.coastlines(resolution='110m', color='black', linewidth=2)
-real_lon_locs = real_lon_locs*180./np.pi
-np.where(real_lon_locs > 180, real_lon_locs-360., real_lon_locs)
-real_lat_locs = real_lat_locs*180./np.pi
-ax2.scatter(real_lon_locs,real_lat_locs,c='r',alpha=.5,transform=ccrs.PlateCarree())
-sensor_lons = sensor_lons*180./np.pi
-np.where(sensor_lons > 180, sensor_lons-360., sensor_lons)
-sensor_lats = sensor_lats*180./np.pi
-ax2.scatter(sensor_lons,sensor_lats,c='k',alpha=.5,transform=ccrs.PlateCarree())
-plt.savefig(proj+"/figs/"+"buoy_loc_estimates.png")
+#not necessary to run this- this generates a figure to check that the selected data coordinates are close to the actual dart buoys
+# import matplotlib.pyplot as plt
+# import cartopy.crs as ccrs
+# proj = os.getcwd()
+# fig = plt.figure()
+# ax2 = plt.axes(projection=ccrs.PlateCarree())
+# ax2.set_global()
+# ax2.coastlines(resolution='110m', color='black', linewidth=2)
+# real_lon_locs = real_lon_locs*180./np.pi
+# real_lat_locs = real_lat_locs*180./np.pi
+# ax2.scatter(real_lon_locs,real_lat_locs,c='r',alpha=.5,transform=ccrs.PlateCarree())
+# sensor_lons = sensor_lons*180./np.pi
+# sensor_lats = sensor_lats*180./np.pi
+# ax2.scatter(sensor_lons,sensor_lats,c='k',alpha=.5,transform=ccrs.PlateCarree())
+# plt.savefig(proj+"/figs/"+"buoy_loc_estimates.png")
 
