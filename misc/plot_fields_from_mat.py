@@ -22,7 +22,6 @@ for i in range(len(data_dir)-1):
     lats = (data['latitude'][0,:])*180./np.pi
     lons = np.where(180<lons,lons-360.,lons)
     z = data['zt']
-    print(np.min(lons),np.max(lons))
 
     times = np.arange(0, len(z), round(len(z) / 5.))
     fig, axs = plt.subplots(nrows=3, ncols=2,subplot_kw={'projection': ccrs.PlateCarree()})
@@ -30,7 +29,7 @@ for i in range(len(data_dir)-1):
         ax.coastlines(resolution='110m', color='black', linewidth=2)
         field = ax.tricontourf(lons, lats, z[t][:,0], cmap='bwr', alpha=.5, transform=ccrs.PlateCarree())
         ax.set_title("t="+str(t))
-    fig.colorbar(field,ax=axs.ravel().tolist())
+    #fig.colorbar(field,ax=axs.ravel().tolist())
     plt.savefig(proj+"/figs/fields/"+"zt_"+data_id+"_long="+str(lon_id)+"_lat="+str(lat_id)+".png")
 
 
