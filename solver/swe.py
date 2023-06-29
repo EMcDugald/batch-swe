@@ -42,12 +42,13 @@ def swe(cnfg):
     name = cnfg.mpas_file
     path, file = os.path.split(name)
     if cnfg.counter:
+        float_formatter = "{:.4f}".format
         ctr = cnfg.counter
-        epi_long = cnfg.epi_long
-        epi_lat = cnfg.epi_lat
+        epi_long = float_formatter(cnfg.epi_long)
+        epi_lat = float_formatter(cnfg.epi_lat)
         save = os.path.join(path, str(ctr) + "_" + str(epi_long) + "_" + str(epi_lat) + ".nc")
     else:
-        save = save = os.path.join(path, "out_" + file)
+        save = os.path.join(path, "out_" + file)
 
     print("Loading input assets...")
     

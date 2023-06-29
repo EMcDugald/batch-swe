@@ -1,17 +1,22 @@
 #!/bin/bash
 
+num_runs=$1 #number of simulations to make
+echo $num_runs
 mesh_file="cdfData/mesh_w_elev_cvt_7.nc"
 init_file="cdfData/initial_condition.nc"
-delete_nc=$1 #pass 1 if you want to save .nc files, 0 otherwise
-epi_long_arr=($(python3 -c 'from sample_epi import get_lons; print(str(get_lons()).replace("[","").replace("]","").replace("\n",""))'))
-epi_lat_arr=($(python3 -c 'from sample_epi import get_lats; print(str(get_lats()).replace("[","").replace("]","").replace("\n",""))'))
-num_runs=${#epi_long_arr[@]}
+delete_nc=$2 #pass 1 if you want to save .nc files, 0 otherwise
+long_arr=($(python3 -c 'from sample_epi import get_lons; print(str(get_lons()).replace("[","").replace("]","").replace("\n",""))'))
+lat_arr=($(python3 -c 'from sample_epi import get_lats; print(str(get_lats()).replace("[","").replace("]","").replace("\n",""))'))
+ids=($(python3 -c 'import sys, sample_epi; print(sample_epi.get_ids(sys.argv[1]).replace("[","").replace("]","").replace(",",""))' "$num_runs"))
+echo "epicenter sampling indices: ${ids[@]}"
+
 
 for ((i=1; i<=$num_runs; i++))
 do
     echo "Running scripts - Iteration $i"
-    epi_long=${lon_arr[i-1]}
-    epi_lat=${lat_arr[i-1]}
+    idx=${ids[i-1]}
+    epi_long=${long_arr[$idx]}
+    epi_lat=${lat_arr[$idx]}
 
     echo "i: $i"
     echo "epi_long: $epi_long"
@@ -38,7 +43,7 @@ do
     printf -v i_pad "%03d" $i
     python solver/swe.py --mpas-file=$init_file \
      --time-step=216. \
-     --num-steps=5 \
+     --num-steps=200 \
      --save-freq=1 \
      --stat-freq=100 \
      --loglaw-z0=0.0025 \

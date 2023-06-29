@@ -8,7 +8,8 @@ import numpy as np
 import os
 
 proj = os.path.normpath(os.getcwd() + os.sep + os.pardir)
-fname = "eq_gt_75_npac.csv"
+#fname = "eq_gt_75_npac.csv"
+fname = "eq_gt_7_depth_gt_1000_npac.csv"
 epi_df = pd.read_csv(proj+"/csvData/"+fname, sep=',')
 
 lats = epi_df['latitude'].to_numpy()
@@ -23,7 +24,7 @@ print("max epi lats:",np.max(lats))
 ax = plt.axes(projection=ccrs.PlateCarree())
 ax.set_global()
 ax.coastlines(resolution='110m', color='black', linewidth=2)
-im = ax.scatter(lons,lats,c=mags,cmap='viridis',alpha=.5,transform=ccrs.PlateCarree())
+im = ax.scatter(lons,lats,color='r',s=.5,transform=ccrs.PlateCarree())
 cb = plt.colorbar(im)
 plt.savefig(proj+"/figs/"+"epis_1.png")
 
