@@ -2,11 +2,14 @@
 #
 #SBATCH --job-name=sim_tsunami
 #SBATCH --output=sim_tsunami.out
-#SBATCH --partition=amd-epyc-gpu
+#SBATCH --partition=gpu
+#SBATCH --time=0-05:00:00
 
 module load miniconda3
 source activate conda_env4
 
+
+#amd-epyc-gpu can be used on darwin
 num_runs=$1 #number of simulations to make
 echo $num_runs
 mesh_file="cdfData/mesh_w_elev_cvt_7.nc"

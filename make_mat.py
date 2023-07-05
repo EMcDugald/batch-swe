@@ -41,11 +41,18 @@ print("dist from actual sensors:",np.linalg.norm(sensor_locs-buoy_loc_arr))
 sensor_lons = sensor_locs[:,0]
 sensor_lats = sensor_locs[:,1]
 
+#only save data when a sensor records something nonzero, then start saving
+sensor_vals = zt[:,sensor_indices]
+sens_abs_max = np.max(np.abs(sensor_vals),axis=1)
+
+start = np.argmax(sens_abs_max>1e-3)
+
 
 mdict = {"longitude": sim_lons, "latitude": sim_lats,
-         "zt": zt, "ke": ke, "du_cell": du_cell,
+         "zt": zt[start:,...], "ke": ke[start:,...], "du_cell": du_cell[start:,...],
          "sensor_loc_indices": sensor_indices,
-         "sensor_locs": sensor_locs}
+         "sensor_locs": sensor_locs,
+         "start time": start}
 sio.savemat(mat_file,mdict)
 
 

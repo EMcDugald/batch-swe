@@ -31,7 +31,7 @@ for i in range(len(data_dir)-1):
     for ax, idx in zip(axs.ravel(),signal_max_inds):
         ax.plot(t, signals[idx])
 
-    plt.savefig(proj+"/figs/signals/"+"top_sigs_for_sim"+sim_num+"at_epi_"+epi_long+"_"+epi_lat+".png")
+    plt.savefig(proj+"/figs/signals/top_derivs/"+"top_sigs_for_sim"+sim_num+"at_epi_"+epi_long+"_"+epi_lat+".png")
 
 
 
