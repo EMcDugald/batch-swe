@@ -24,12 +24,17 @@ for i in range(len(data_dir)-1):
     z = data['zt']
 
     times = np.arange(0, len(z), round(len(z) / 5.))
-    fig, axs = plt.subplots(nrows=3, ncols=2,subplot_kw={'projection': ccrs.PlateCarree()})
+    #fig, axs = plt.subplots(nrows=3, ncols=2,subplot_kw={'projection': ccrs.PlateCarree()})
+    fig, axs = plt.subplots(nrows=3, ncols=2)
     for ax, t in zip(axs.flat, times):
-        ax.coastlines(resolution='110m', color='black', linewidth=2)
-        field = ax.tricontourf(lons, lats, z[t][:,0], cmap='bwr', alpha=.5, transform=ccrs.PlateCarree())
+        #ax.coastlines(resolution='110m', color='black', linewidth=2)
+        #field = ax.tricontourf(lons, lats, z[t][:,0], cmap='bwr', alpha=.5, transform=ccrs.PlateCarree())
+        #field = ax.scatter(lons, lats, c=z[t][:, 0], cmap='bwr', s=.1, transform=ccrs.PlateCarree())
+        field = ax.scatter(lons, lats, c=z[t][:, 0], cmap='bwr', s=.1)
         ax.set_title("t="+str(t))
-    #fig.colorbar(field,ax=axs.ravel().tolist())
+        plt.colorbar(field,ax=ax)
+    #fig.colorbar(field,ax=axs.ravel().tolist(),location='right')
+    plt.tight_layout()
     plt.savefig(proj+"/figs/fields/"+"zt_"+data_id+"_long="+str(lon_id)+"_lat="+str(lat_id)+".png")
 
 
