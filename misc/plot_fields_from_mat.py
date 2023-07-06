@@ -37,6 +37,7 @@ for i in range(len(data_dir)-1):
     fig.set_figwidth(int(3*(4+1)))
     plt.tight_layout()
     plt.savefig(proj+"/figs/fields/"+"zt_"+data_id+"_long="+str(lon_id)+"_lat="+str(lat_id)+".png")
+    plt.close()
 
 
 
