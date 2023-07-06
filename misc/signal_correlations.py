@@ -101,11 +101,11 @@ for i in range(len(data_dir)-1):
     # Extract cluster assignments
     cluster_assignments = hierarchy.cut_tree(linkage, n_clusters=k).flatten()
 
-    ids_clustered = []
+    #ids_clustered = []
     fig2, axs2 = plt.subplots(nrows=5,ncols=2)
     for i,ax2 in zip(range(k),axs2.flat):
         sig_ids = np.where((cluster_assignments==i))
-        ids_clustered.append(sig_ids)
+        #ids_clustered.append(sig_ids)
         sigs_to_plot = signals[sig_ids]
         for sig in sigs_to_plot:
             ax2.plot(sig)
@@ -119,15 +119,17 @@ for i in range(len(data_dir)-1):
     lons = (data['longitude'][0, :]) * 180. / np.pi
     lats = (data['latitude'][0, :]) * 180. / np.pi
     lons = np.where(180 < lons, lons - 360., lons)
+    lon_id = float(lon_id)
+    lat_id = float(lat_id)
+    if 180 < lon_id:
+        lon_id -= 360.
     fig3, ax3 = plt.subplots(subplot_kw={'projection': ccrs.PlateCarree()})
     #viridis = cm.get_cmap('viridis', 10)
     ax3.coastlines(resolution='110m', color='black', linewidth=2)
-    for i in range(k):
-        lons_i = lons[ids_clustered[i]]
-        lats_i = lats[ids_clustered[i]]
-        #ax3.scatter(lons_i,lats_i,c=viridis(range(10))[i])
-        ax3.scatter(lons_i, lats_i,transform=ccrs.PlateCarree())
-    ax3.scatter(float(lon_id),float(lat_id),color='r',transform=ccrs.PlateCarree())
+    lons_i = lons[sensor_indices[cluster_assignments[0]]]
+    lats_i = lats[sensor_indices[cluster_assignments[0]]]
+    ax3.scatter(lons_i, lats_i,c=cluster_assignments,cmap='bwr',transform=ccrs.PlateCarree())
+    ax3.scatter(lon_id,lat_id,color='k',s=2,transform=ccrs.PlateCarree())
     plt.tight_layout()
     plt.savefig(proj + "/figs/signals/correlations/" + "zt_" + data_id + "_long=" + str(lon_id) + "_lat=" + str(lat_id) + "_cluster_locs" ".png")
     plt.close()
