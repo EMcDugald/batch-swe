@@ -34,7 +34,7 @@ for i in range(len(data_dir)-1):
         ax.plot(t, signals[idx])
 
     plt.tight_layout()
-    plt.savefig(proj+"/figs/signals/top_derivs/"+"top_sigs_for_sim"+sim_num+"at_epi_"+epi_long+"_"+epi_lat+".png")
+    plt.savefig(proj+"/figs/signals/top_sigs/"+"top_sigs_for_sim"+sim_num+"at_epi_"+epi_long+"_"+epi_lat+".png")
 
     # fig2, ax2 = plt.subplots(subplot_kw={'projection': ccrs.PlateCarree()})
     # ax2.scatter(sensor_locs[0],sensor_locs[1],transform=ccrs.PlateCarree())

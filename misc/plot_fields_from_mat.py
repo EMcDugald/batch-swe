@@ -16,7 +16,7 @@ for i in range(len(data_dir)-1):
     data = sio.loadmat(proj+"/matData"+"/"+fname)
     data_id = fname.split("_")[0]
     lon_id = fname.split("_")[1]
-    lat_id = fname.split("_")[2]
+    lat_id = fname.split("_")[2].replace(".mat","")
 
     lons = (data['longitude'][0,:])*180./np.pi
     lats = (data['latitude'][0,:])*180./np.pi
