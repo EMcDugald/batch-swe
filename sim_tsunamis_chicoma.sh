@@ -1,11 +1,11 @@
 #!/bin/bash -l
 #
-#SBATCH --job-name=sim_tsunamis
-#SBATCH --output=sim_tsunamis.out
-#SBATCH --partition=shared-gpu
+#SBATCH --job-name=sim_tsunamis_chicoma
+#SBATCH --output=sim_tsunamis_chicoma.out
+#SBATCH --partition=gpu
 #SBATCH --time=0-05:00:00
 
-module load miniconda3
+module load python/3.10-anaconda-2023.03
 source activate torch_gpu
 
 

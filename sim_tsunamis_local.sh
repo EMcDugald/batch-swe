@@ -1,12 +1,4 @@
-#!/bin/bash -l
-#
-#SBATCH --job-name=sim_tsunamis
-#SBATCH --output=sim_tsunamis.out
-#SBATCH --partition=shared-gpu
-#SBATCH --time=0-05:00:00
-
-module load miniconda3
-source activate torch_gpu
+#!/bin/bash
 
 
 num_runs=$1 #number of simulations to make

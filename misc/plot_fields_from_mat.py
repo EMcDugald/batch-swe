@@ -3,6 +3,7 @@ import cartopy.crs as ccrs
 import os
 import scipy.io as sio
 import numpy as np
+import math
 
 from warnings import filterwarnings
 filterwarnings(action='ignore', category=DeprecationWarning, message='`np.bool` is a deprecated alias')
@@ -22,14 +23,21 @@ for i in range(len(data_dir)-1):
     lats = (data['latitude'][0,:])*180./np.pi
     lons = np.where(180<lons,lons-360.,lons)
     z = data['zt']
+    sensor_locs = data['sensor_locs'].T
+    sensor_lons = sensor_locs[0]*180./np.pi
+    sensor_lons = np.where(180 < sensor_lons, sensor_lons - 360., sensor_lons)
+    sensor_lats = sensor_locs[1]*180./np.pi
 
-    times = np.arange(0, len(z), round(len(z) / 12.))
+    #times = np.arange(0, len(z), round(len(z) / 12.))
+    times= data['t']
     #fig, axs = plt.subplots(nrows=3, ncols=2,subplot_kw={'projection': ccrs.PlateCarree()})
     fig, axs = plt.subplots(nrows=4, ncols=3)
-    for ax, t in zip(axs.flat, times[0:12]):
+    #for ax, t in zip(axs.flat, times[0:12]):
+    for ax,t in zip(axs.flat, times[0][::math.ceil(len(times[0])/12)]):
         #ax.coastlines(resolution='110m', color='black', linewidth=2)
         #field = ax.tricontourf(lons, lats, z[t][:,0], cmap='bwr', alpha=.5, transform=ccrs.PlateCarree())
         field = ax.scatter(lons, lats, c=z[t][:, 0], cmap='bwr', s=.1)
+        ax.scatter(sensor_lons, sensor_lats,color='k',s=.25)
         ax.set_title("t="+str(t))
         plt.colorbar(field,ax=ax)
     #fig.colorbar(field,ax=axs.ravel().tolist(),location='right')

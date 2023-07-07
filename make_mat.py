@@ -14,6 +14,8 @@ mat_path = os.getcwd()+"/matData/"
 ctr = sys.argv[1]
 epi_long = sys.argv[2]
 epi_lat = sys.argv[3]
+wait_until_first_detection = sys.argv[4]
+suppress_zero_sigs = sys.argv[5]
 nc_file = os.path.join(nc_path, ctr + "_" + str(epi_long) + "_" + str(epi_lat) + ".nc")
 mat_file = os.path.join(mat_path, ctr + "_" + str(epi_long) + "_" + str(epi_lat) + ".mat")
 dataset = netcdf_dataset(nc_file)
@@ -22,6 +24,7 @@ sim_lats = dataset.variables['latCell'][:].data
 zt = dataset.variables['zt_cell'][:].data
 ke = dataset.variables['ke_cell'][:].data
 du_cell = dataset.variables['du_cell'][:].data
+t = np.arange(0,len(zt))
 
 real_sensor_locs_file = "DART_locs.csv"
 buoys_df = pd.read_csv(os.getcwd()+"/csvData/"+real_sensor_locs_file, sep=',')
@@ -42,17 +45,34 @@ sensor_lons = sensor_locs[:,0]
 sensor_lats = sensor_locs[:,1]
 
 #only save data when a sensor records something nonzero, then start saving
-sensor_vals = zt[:,sensor_indices]
-sens_abs_max = np.max(np.abs(sensor_vals),axis=1)
+start=0
+if wait_until_first_detection:
+    sensor_vals = zt[:,sensor_indices]
+    #201x66 (for each time, what is the set of sensor readings. we don't consider simulations until the first time a nonzero signal is detected)
+    sens_abs_max = np.max(np.abs(sensor_vals),axis=1)
+    start = np.argmax(sens_abs_max>1e-3)
+    t = t[start:]
 
-start = np.argmax(sens_abs_max>1e-3)
+#only save sensor indices that have non-trivial readings
+if suppress_zero_sigs:
+    zt = zt[start:,...]
+    signals = zt[:, sensor_indices]
+    #signals is (len(zt)-start,66) array. so the rows are time, cols is sig values
+    #a column here gives the signal profile at a signal
+    max_sigs = np.max(np.abs(signals),axis=0)
+    non_zero_inds = np.where(max_sigs[:, 0] > 1e-3)
+    sensor_indices = np.asarray(sensor_indices)[np.asarray(non_zero_inds).tolist()[0]].tolist()
+    sensor_locs = sim_locs[sensor_indices]
+
+
+
 
 
 mdict = {"longitude": sim_lons, "latitude": sim_lats,
          "zt": zt[start:,...], "ke": ke[start:,...], "du_cell": du_cell[start:,...],
          "sensor_loc_indices": sensor_indices,
          "sensor_locs": sensor_locs,
-         "start time": start}
+         "t": t}
 sio.savemat(mat_file,mdict)
 
 
