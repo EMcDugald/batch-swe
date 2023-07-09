@@ -17,16 +17,33 @@ for i in range(len(data_dir)-1):
     data = sio.loadmat(proj+"/matData"+"/"+fname)
     data_id = fname.split("_")[0]
     lon_id = fname.split("_")[1]
-    lat_id = fname.split("_")[2].replace(".mat","")
+    if 'restruct' in fname:
+        lat_id = fname.split("_")[2].replace("_restruct.mat", "")
+    else:
+        lat_id = fname.split("_")[2].replace(".mat","")
 
-    lons = (data['longitude'][0,:])*180./np.pi
-    lats = (data['latitude'][0,:])*180./np.pi
+
+    if 'restruct' in fname:
+        lons = (data['longitude'])*180./np.pi
+        lats = (data['latitude'])*180./np.pi
+        lons = lons.flatten()
+        lats = lats.flatten()
+    else:
+        lons = (data['longitude'][0,:])*180./np.pi
+        lats = (data['latitude'][0,:])*180./np.pi
+
     lons = np.where(180<lons,lons-360.,lons)
     z = data['zt']
     sensor_locs = data['sensor_locs'].T
-    sensor_lons = sensor_locs[0]*180./np.pi
-    sensor_lons = np.where(180 < sensor_lons, sensor_lons - 360., sensor_lons)
-    sensor_lats = sensor_locs[1]*180./np.pi
+
+    if 'restruct' in fname:
+        sensor_lons = sensor_locs[1] * 180. / np.pi
+        sensor_lons = np.where(180 < sensor_lons, sensor_lons - 360., sensor_lons)
+        sensor_lats = sensor_locs[0] * 180. / np.pi
+    else:
+        sensor_lons = sensor_locs[0]*180./np.pi
+        sensor_lons = np.where(180 < sensor_lons, sensor_lons - 360., sensor_lons)
+        sensor_lats = sensor_locs[1]*180./np.pi
 
     #times = np.arange(0, len(z), round(len(z) / 12.))
     times= data['t']
@@ -36,7 +53,11 @@ for i in range(len(data_dir)-1):
     for ax,t in zip(axs.flat, times[0][::math.ceil(len(times[0])/12)]):
         #ax.coastlines(resolution='110m', color='black', linewidth=2)
         #field = ax.tricontourf(lons, lats, z[t][:,0], cmap='bwr', alpha=.5, transform=ccrs.PlateCarree())
-        field = ax.scatter(lons, lats, c=z[t][:, 0], cmap='bwr', s=.1)
+        if 'restruct' in fname:
+            zplt = z[t].flatten()
+        else:
+            zplt = z[t][:,0]
+        field = ax.scatter(lons, lats, c=zplt, cmap='bwr', s=.1)
         ax.scatter(sensor_lons, sensor_lats,color='k',s=.25)
         ax.set_title("t="+str(t))
         plt.colorbar(field,ax=ax)
