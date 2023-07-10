@@ -18,6 +18,7 @@ epi_lat = sys.argv[3]
 wait_until_first_detection = int(sys.argv[4])
 suppress_zero_sigs = int(sys.argv[5])
 regrid = int(sys.argv[6])
+subsample_fctr = int(sys.argv[7])
 nc_file = os.path.join(nc_path, ctr + "_" + str(epi_lon) + "_" + str(epi_lat) + ".nc")
 dataset = netcdf_dataset(nc_file)
 
@@ -45,6 +46,9 @@ if regrid:
     upts = np.array([ulons,ulats]).T
     uzt = dataset.variables['zt_cell'][:].data
     zt = np.asarray([griddata(upts,uzt[i],(sim_lons,sim_lats),method='cubic',fill_value=0) for i in range(len(uzt))])
+    sim_lons = sim_lons[::subsample_fctr,::subsample_fctr]
+    sim_lats = sim_lats[::subsample_fctr,::subsample_fctr]
+    zt = zt[:,::subsample_fctr,::subsample_fctr]
     # uke = dataset.variables['ke_cell'][:].data
     # ke = np.asarray([griddata(upts,uke[i],(slons_m,slats_m),method='cubic',fill_value=0) for i in range(len(uzt))])
     # udu_cell = dataset.variables['du_cell'][:].data
@@ -87,6 +91,9 @@ else:
     sim_lons = dataset.variables['lonCell'][:].data
     sim_lats = dataset.variables['latCell'][:].data
     zt = dataset.variables['zt_cell'][:].data
+    sim_lons = sim_lons[::subsample_fctr]
+    sim_lats = sim_lats[::subsample_fctr]
+    zt = zt[:,::subsample_fctr]
     # ke = dataset.variables['ke_cell'][:].data
     # du_cell = dataset.variables['du_cell'][:].data
 

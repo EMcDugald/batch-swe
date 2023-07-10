@@ -9,6 +9,7 @@ delete_nc=$2 #pass 1 if you want to save .nc files, 0 otherwise
 wait_until_first_detection=$3
 suppress_zero_sigs=$4
 regrid=$5
+subsample_fctr=$6
 long_arr=($(python3 -c 'from sample_epi import get_lons; print(str(get_lons()).replace("[","").replace("]","").replace("\n",""))'))
 lat_arr=($(python3 -c 'from sample_epi import get_lats; print(str(get_lats()).replace("[","").replace("]","").replace("\n",""))'))
 ids=($(python3 -c 'import sys, sample_epi; print(sample_epi.get_ids(sys.argv[1]).replace("[","").replace("]","").replace(",",""))' "$num_runs"))
@@ -61,7 +62,7 @@ do
     out_nc="cdfData/"$i_pad"_"$epi_long"_"$epi_lat".nc"
     echo "out nc: $out_nc"
 
-    python make_mat.py $i_pad $epi_long $epi_lat $wait_until_first_detection $suppress_zero_sigs $regrid
+    python make_mat.py $i_pad $epi_long $epi_lat $wait_until_first_detection $suppress_zero_sigs $regrid $subsample_fctr
 
     # Delete initial condition file before next run
     rm $init_file
