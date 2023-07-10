@@ -15,9 +15,9 @@ mat_path = os.getcwd()+"/matData/"
 ctr = sys.argv[1]
 epi_lon = sys.argv[2]
 epi_lat = sys.argv[3]
-wait_until_first_detection = sys.argv[4]
-suppress_zero_sigs = sys.argv[5]
-regrid = sys.argv[6]
+wait_until_first_detection = int(sys.argv[4])
+suppress_zero_sigs = int(sys.argv[5])
+regrid = int(sys.argv[6])
 nc_file = os.path.join(nc_path, ctr + "_" + str(epi_lon) + "_" + str(epi_lat) + ".nc")
 dataset = netcdf_dataset(nc_file)
 
@@ -32,6 +32,7 @@ real_lat_locs = buoys_df['latitude'].to_numpy()*np.pi/180.
 buoy_loc_arr = np.array([real_lon_locs,real_lat_locs]).T
 
 if regrid:
+    print("making mat file with regridding")
     mat_file = os.path.join(mat_path, ctr + "_" + str(epi_lon) + "_" + str(epi_lat) +"_restruct"+".mat")
     num_pts = dataset.dimensions['nCells'].size
     lat_size = round(np.sqrt(num_pts/2))
@@ -59,6 +60,7 @@ if regrid:
 
     start = 0
     if wait_until_first_detection:
+        print("waiting until first detection")
         sensor_vals = zt[:, sensor_indices[:,0], sensor_indices[:,1]]
         # 201x66 (for each time, what is the set of sensor readings. we don't consider simulations until the first time a nonzero signal is detected)
         sens_abs_max = np.max(np.abs(sensor_vals), axis=1)
@@ -67,6 +69,7 @@ if regrid:
 
     # only save sensor indices that have non-trivial readings
     if suppress_zero_sigs:
+        print("suppressing zero signal sensors")
         zt = zt[start:, ...]
         signals = zt[:, sensor_indices[:,0],sensor_indices[:,1]]
         # signals is (len(zt)-start,66) array. so the rows are time, cols is sig values
@@ -79,6 +82,7 @@ if regrid:
             sensor_locs[i] = [sim_lats[sensor_indices[i][0],sensor_indices[i][1]],sim_lons[sensor_indices[i][0],sensor_indices[i][1]]]
 
 else:
+    print("making unstructured mat file")
     mat_file = os.path.join(mat_path, ctr + "_" + str(epi_lon) + "_" + str(epi_lat) + ".mat")
     sim_lons = dataset.variables['lonCell'][:].data
     sim_lats = dataset.variables['latCell'][:].data
@@ -100,6 +104,7 @@ else:
     #only save data when a sensor records something nonzero, then start saving
     start=0
     if wait_until_first_detection:
+        print("waiting until first detection")
         sensor_vals = zt[:,sensor_indices]
         #201x66 (for each time, what is the set of sensor readings. we don't consider simulations until the first time a nonzero signal is detected)
         sens_abs_max = np.max(np.abs(sensor_vals),axis=1)
@@ -108,6 +113,7 @@ else:
 
     #only save sensor indices that have non-trivial readings
     if suppress_zero_sigs:
+        print("suppressing zero signal sensors")
         zt = zt[start:,...]
         signals = zt[:, sensor_indices]
         #signals is (len(zt)-start,66) array. so the rows are time, cols is sig values
@@ -120,7 +126,7 @@ else:
 
 print("number of times saved:",len(t))
 mdict = {"longitude": sim_lons, "latitude": sim_lats,
-         "zt": zt[start:,...],
+         "zt": zt,
          # "ke": ke[start:,...],
          # "du_cell": du_cell[start:,...],
          "sensor_loc_indices": sensor_indices,

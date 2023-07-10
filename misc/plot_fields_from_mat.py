@@ -49,14 +49,16 @@ for i in range(len(data_dir)-1):
     times= data['t']
     #fig, axs = plt.subplots(nrows=3, ncols=2,subplot_kw={'projection': ccrs.PlateCarree()})
     fig, axs = plt.subplots(nrows=4, ncols=3)
+    sampled_times = times[0][::round(len(times[0])/12)][0:12]
+    lag = int(sampled_times[0])
     #for ax, t in zip(axs.flat, times[0:12]):
-    for ax,t in zip(axs.flat, times[0][::math.ceil(len(times[0])/12)]):
+    for ax,t in zip(axs.flat, sampled_times):
         #ax.coastlines(resolution='110m', color='black', linewidth=2)
         #field = ax.tricontourf(lons, lats, z[t][:,0], cmap='bwr', alpha=.5, transform=ccrs.PlateCarree())
         if 'restruct' in fname:
-            zplt = z[t].flatten()
+            zplt = z[t-lag].flatten()
         else:
-            zplt = z[t][:,0]
+            zplt = z[t-lag][:,0]
         field = ax.scatter(lons, lats, c=zplt, cmap='bwr', s=.1)
         ax.scatter(sensor_lons, sensor_lats,color='k',s=.25)
         ax.set_title("t="+str(t))

@@ -19,6 +19,10 @@ data_dir.sort()
 for i in range(len(data_dir)-1):
     fidx = i
     fname = data_dir[fidx]
+
+    if 'restruct' in fname:
+        continue
+
     data = sio.loadmat(proj+"/matData"+"/"+fname)
     data_id = fname.split("_")[0]
     lon_id = fname.split("_")[1]
@@ -91,18 +95,24 @@ for i in range(len(data_dir)-1):
 
     # Compute the correlation matrix
     correlation_matrix = np.corrcoef(signals)
+    fig0, ax0 = plt.subplots()
+    im0 = ax0.imshow(correlation_matrix,cmap='bwr')
+    plt.colorbar(im0)
+    plt.tight_layout()
+    plt.savefig(proj + "/figs/signals/correlations/" + "zt_" + data_id + "_long=" + str(lon_id) + "_lat=" + str(lat_id) + "_corr_mat" + ".png")
+    plt.close()
 
     # Apply hierarchical clustering
     linkage = hierarchy.linkage(correlation_matrix, method='average', metric='correlation')
 
     # Determine the number of clusters
-    k = 10  # Number of desired clusters
+    k = 6  # Number of desired clusters
 
     # Extract cluster assignments
     cluster_assignments = hierarchy.cut_tree(linkage, n_clusters=k).flatten()
 
     #ids_clustered = []
-    fig2, axs2 = plt.subplots(nrows=5,ncols=2)
+    fig2, axs2 = plt.subplots(nrows=3,ncols=2)
     for i,ax2 in zip(range(k),axs2.flat):
         sig_ids = np.where((cluster_assignments==i))
         #ids_clustered.append(sig_ids)
