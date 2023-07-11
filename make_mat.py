@@ -34,7 +34,7 @@ buoy_loc_arr = np.array([real_lon_locs,real_lat_locs]).T
 
 if regrid:
     print("making mat file with regridding")
-    mat_file = os.path.join(mat_path, ctr + "_" + str(epi_lon) + "_" + str(epi_lat) +"_restruct"+".mat")
+    mat_file = os.path.join(mat_path, ctr + "_" + str(epi_lon) + "_" + str(epi_lat) +"_ss_"+str(subsample_fctr) +"_restruct"+".mat")
     num_pts = dataset.dimensions['nCells'].size
     lat_size = round(np.sqrt(num_pts/2))
     lon_size = int(2*lat_size)
@@ -87,7 +87,7 @@ if regrid:
 
 else:
     print("making unstructured mat file")
-    mat_file = os.path.join(mat_path, ctr + "_" + str(epi_lon) + "_" + str(epi_lat) + ".mat")
+    mat_file = os.path.join(mat_path, ctr + "_" + str(epi_lon) + "_" + str(epi_lat) + "_ss_" + str(subsample_fctr) + ".mat")
     sim_lons = dataset.variables['lonCell'][:].data
     sim_lats = dataset.variables['latCell'][:].data
     zt = dataset.variables['zt_cell'][:].data

@@ -53,14 +53,14 @@ for i in range(len(data_dir)-1):
     lag = int(sampled_times[0])
     #for ax, t in zip(axs.flat, times[0:12]):
     for ax,t in zip(axs.flat, sampled_times):
-        #ax.coastlines(resolution='110m', color='black', linewidth=2)
+        #ax.coastlines(resolution='50m', color='black', linewidth=1)
         #field = ax.tricontourf(lons, lats, z[t][:,0], cmap='bwr', alpha=.5, transform=ccrs.PlateCarree())
         if 'restruct' in fname:
             zplt = z[t-lag].flatten()
         else:
             zplt = z[t-lag][:,0]
-        field = ax.scatter(lons, lats, c=zplt, cmap='bwr', s=.1)
-        ax.scatter(sensor_lons, sensor_lats,color='k',s=.25)
+        field = ax.scatter(lons, lats, c=zplt, cmap='bwr')
+        ax.scatter(sensor_lons, sensor_lats,color='k',s=.7)
         ax.set_title("t="+str(t))
         plt.colorbar(field,ax=ax)
     #fig.colorbar(field,ax=axs.ravel().tolist(),location='right')

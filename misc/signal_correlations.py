@@ -20,9 +20,6 @@ for i in range(len(data_dir)-1):
     fidx = i
     fname = data_dir[fidx]
 
-    if 'restruct' in fname:
-        continue
-
     data = sio.loadmat(proj+"/matData"+"/"+fname)
     data_id = fname.split("_")[0]
     lon_id = fname.split("_")[1]
@@ -30,23 +27,16 @@ for i in range(len(data_dir)-1):
 
     z = data['zt']
     sensor_indices = data['sensor_loc_indices']
-    signals = z[:,sensor_indices,0].T.reshape(len(sensor_indices[0,:]),len(z))
+
+    if 'restruct' in fname:
+        signals = z[:, sensor_indices[:,0],sensor_indices[:,1], 0].T.reshape(len(sensor_indices), len(z))
+    else:
+        signals = z[:,sensor_indices,0].T.reshape(len(sensor_indices[0,:]),len(z))
     #signal_ffts = np.real(fft(signals,axis=1))
 
     comb_list = []
     for comb in itertools.combinations(range(len(signals)), 2):
         comb_list.append(comb)
-
-    # corr_arr1 = np.zeros(shape=(len(comb_list),3))
-    # corr_arr1[:,0:2] = np.asarray(comb_list)
-
-    # for i in range(len(corr_arr1)):
-    #     j = int(corr_arr1[i][0])
-    #     k = int(corr_arr1[i][1])
-    #     corr = np.sum(np.real(ifft(signal_ffts[j]*signal_ffts[k])))
-    #     corr_arr1[i][2] = corr
-
-    # max_corr_inds1 = np.argsort(corr_arr1[:,2])
 
     corr_arr2 = np.zeros(shape=(len(comb_list),3))
     corr_arr2[:,0:2] = np.asarray(comb_list)
@@ -126,6 +116,8 @@ for i in range(len(data_dir)-1):
     plt.savefig(proj + "/figs/signals/correlations/" + "zt_" + data_id + "_long=" + str(lon_id) + "_lat=" + str(lat_id) +"_clustering"+ ".png")
     plt.close()
 
+    if 'restruct' in fname:
+        continue
     lons = (data['longitude'][0, :]) * 180. / np.pi
     lats = (data['latitude'][0, :]) * 180. / np.pi
     lons = np.where(180 < lons, lons - 360., lons)
