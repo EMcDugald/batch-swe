@@ -69,12 +69,12 @@ if regrid:
         # 201x66 (for each time, what is the set of sensor readings. we don't consider simulations until the first time a nonzero signal is detected)
         sens_abs_max = np.max(np.abs(sensor_vals), axis=1)
         start = np.argmax(sens_abs_max > 1e-3)
+        zt = zt[start:, ...]
         t = t[start:]
 
     # only save sensor indices that have non-trivial readings
     if suppress_zero_sigs:
         print("suppressing zero signal sensors")
-        zt = zt[start:, ...]
         signals = zt[:, sensor_indices[:,0],sensor_indices[:,1]]
         # signals is (len(zt)-start,66) array. so the rows are time, cols is sig values
         # a column here gives the signal profile at a signal
@@ -116,12 +116,12 @@ else:
         #201x66 (for each time, what is the set of sensor readings. we don't consider simulations until the first time a nonzero signal is detected)
         sens_abs_max = np.max(np.abs(sensor_vals),axis=1)
         start = np.argmax(sens_abs_max>1e-3)
+        zt = zt[start:, ...]
         t = t[start:]
 
     #only save sensor indices that have non-trivial readings
     if suppress_zero_sigs:
         print("suppressing zero signal sensors")
-        zt = zt[start:,...]
         signals = zt[:, sensor_indices]
         #signals is (len(zt)-start,66) array. so the rows are time, cols is sig values
         #a column here gives the signal profile at a signal
