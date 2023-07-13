@@ -16,7 +16,7 @@ print(proj)
 data_dir = os.listdir(proj+"/matData")
 data_dir.sort()
 
-for i in range(len(data_dir)-1):
+for i in range(len(data_dir)-3):
     fidx = i
     fname = data_dir[fidx]
 
@@ -24,6 +24,9 @@ for i in range(len(data_dir)-1):
     data_id = fname.split("_")[0]
     lon_id = fname.split("_")[1]
     lat_id = fname.split("_")[2].replace(".mat","")
+
+    if data_id in ['struct','unstruct']:
+        continue
 
     z = data['zt']
     sensor_indices = data['sensor_loc_indices']
@@ -118,6 +121,7 @@ for i in range(len(data_dir)-1):
 
     if 'restruct' in fname:
         continue
+
     lons = (data['longitude'][0, :]) * 180. / np.pi
     lats = (data['latitude'][0, :]) * 180. / np.pi
     lons = np.where(180 < lons, lons - 360., lons)

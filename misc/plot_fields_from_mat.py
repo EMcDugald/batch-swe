@@ -11,11 +11,14 @@ filterwarnings(action='ignore', category=DeprecationWarning, message='`np.bool` 
 proj = os.path.normpath(os.getcwd() + os.sep + os.pardir)
 data_dir = os.listdir(proj+"/matData")
 data_dir.sort()
-for i in range(len(data_dir)-1):
+for i in range(len(data_dir)-3):
     fidx = i
     fname = data_dir[fidx]
     data = sio.loadmat(proj+"/matData"+"/"+fname)
     data_id = fname.split("_")[0]
+    if data_id in ['struct','unstruct']:
+        continue
+
     lon_id = fname.split("_")[1]
     if 'restruct' in fname:
         lat_id = fname.split("_")[2].replace("_restruct.mat", "")
@@ -60,17 +63,18 @@ for i in range(len(data_dir)-1):
         else:
             zplt = z[t-lag][:,0]
         field = ax.scatter(lons, lats, c=zplt, cmap='bwr')
-        ax.scatter(sensor_lons, sensor_lats,color='k',s=.7)
+        ax.scatter(sensor_lons, sensor_lats,color='k',s=.1)
         ax.set_title("t="+str(t))
         plt.colorbar(field,ax=ax)
     #fig.colorbar(field,ax=axs.ravel().tolist(),location='right')
     fig.set_figheight(int(4*(2+1)))
     fig.set_figwidth(int(3*(4+1)))
     plt.tight_layout()
-    if 'restruct' in fname:
-        savepath = proj+"/figs/fields/"+"zt_"+data_id+"_long="+str(lon_id)+"_lat="+str(lat_id)+"_restruct"+".png"
-    else:
-        savepath = proj+"/figs/fields/"+"zt_"+data_id+"_long="+str(lon_id)+"_lat="+str(lat_id)+".png"
+    savepath = proj+"/figs/fields/"+"zt_"+fname.replace(".mat","")+".png"
+    # if 'restruct' in fname:
+    #     savepath = proj+"/figs/fields/"+"zt_"+data_id+"_long="+str(lon_id)+"_lat="+str(lat_id)+"_restruct"+".png"
+    # else:
+    #     savepath = proj+"/figs/fields/"+"zt_"+data_id+"_long="+str(lon_id)+"_lat="+str(lat_id)+".png"
     plt.savefig(savepath)
     plt.close()
 
