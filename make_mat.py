@@ -5,13 +5,11 @@ import sys
 import pandas as pd
 import numpy as np
 from scipy.interpolate import griddata
+import random
 
 from warnings import filterwarnings
 filterwarnings(action='ignore', category=DeprecationWarning, message='`np.bool` is a deprecated alias')
 
-print("Making mat file")
-nc_path = os.getcwd()+"/cdfData/"
-mat_path = os.getcwd()+"/matData/"
 ctr = sys.argv[1]
 epi_lon = sys.argv[2]
 epi_lat = sys.argv[3]
@@ -19,6 +17,17 @@ wait_until_first_detection = int(sys.argv[4])
 suppress_zero_sigs = int(sys.argv[5])
 regrid = int(sys.argv[6])
 subsample_fctr = int(sys.argv[7])
+num_times = int(sys.argv[8])
+agg_data = int(sys.argv[9])
+
+print("Making mat file")
+nc_path = os.getcwd()+"/cdfData/"
+if agg_data:
+    if not os.path.exists(os.getcwd()+"/matData_temp"):
+        os.mkdir(os.getcwd()+"/matData_temp")
+    mat_path = os.getcwd()+"/matData_temp/"
+else:
+    mat_path = os.getcwd()+"/matData/"
 nc_file = os.path.join(nc_path, ctr + "_" + str(epi_lon) + "_" + str(epi_lat) + ".nc")
 dataset = netcdf_dataset(nc_file)
 
@@ -46,9 +55,12 @@ if regrid:
     upts = np.array([ulons,ulats]).T
     uzt = dataset.variables['zt_cell'][:].data
     zt = np.asarray([griddata(upts,uzt[i],(sim_lons,sim_lats),method='cubic',fill_value=0) for i in range(len(uzt))])
+    uzb = dataset.variables['zb_cell'][:].data
+    zb = np.asarray(griddata(upts, uzb, (sim_lons, sim_lats), method='cubic', fill_value=0))
     sim_lons = sim_lons[::subsample_fctr,::subsample_fctr]
     sim_lats = sim_lats[::subsample_fctr,::subsample_fctr]
     zt = zt[:,::subsample_fctr,::subsample_fctr]
+    zb = zb[::subsample_fctr,::subsample_fctr]
     # uke = dataset.variables['ke_cell'][:].data
     # ke = np.asarray([griddata(upts,uke[i],(slons_m,slats_m),method='cubic',fill_value=0) for i in range(len(uzt))])
     # udu_cell = dataset.variables['du_cell'][:].data
@@ -91,9 +103,11 @@ else:
     sim_lons = dataset.variables['lonCell'][:].data
     sim_lats = dataset.variables['latCell'][:].data
     zt = dataset.variables['zt_cell'][:].data
+    zb = dataset.variables['zb_cell'][:].data
     sim_lons = sim_lons[::subsample_fctr]
     sim_lats = sim_lats[::subsample_fctr]
     zt = zt[:,::subsample_fctr]
+    zb = zb[::subsample_fctr]
     # ke = dataset.variables['ke_cell'][:].data
     # du_cell = dataset.variables['du_cell'][:].data
 
@@ -131,9 +145,16 @@ else:
         sensor_locs = sim_locs[sensor_indices]
 
 
+if num_times:
+    all_ids = range(len(t))
+    sampled_ids = random.sample(all_ids,num_times)
+    t = t[sampled_ids]
+    zt = zt[sampled_ids,...]
+
 print("number of times saved:",len(t))
 mdict = {"longitude": sim_lons, "latitude": sim_lats,
          "zt": zt,
+         "ocn_floor": zb,
          # "ke": ke[start:,...],
          # "du_cell": du_cell[start:,...],
          "sensor_loc_indices": sensor_indices,

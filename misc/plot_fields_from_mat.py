@@ -11,13 +11,13 @@ filterwarnings(action='ignore', category=DeprecationWarning, message='`np.bool` 
 proj = os.path.normpath(os.getcwd() + os.sep + os.pardir)
 data_dir = os.listdir(proj+"/matData")
 data_dir.sort()
-for i in range(len(data_dir)-3):
+for i in range(len(data_dir)-1):
     fidx = i
     fname = data_dir[fidx]
     data = sio.loadmat(proj+"/matData"+"/"+fname)
     data_id = fname.split("_")[0]
-    if data_id in ['struct','unstruct']:
-        continue
+    # if data_id in ['struct','unstruct']:
+    #     continue
 
     lon_id = fname.split("_")[1]
     if 'restruct' in fname:
