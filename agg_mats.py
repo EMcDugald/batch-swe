@@ -8,6 +8,9 @@ subsample_fctr = int(sys.argv[2])
 num_times = int(sys.argv[3])
 num_sims = int(sys.argv[4])
 
+if not os.path.exists(os.getcwd() + "/agg_matData"):
+    os.mkdir(os.getcwd() + "/agg_matData")
+
 pref = os.getcwd()
 files = os.listdir(pref+"/matData_temp")
 files.sort()
@@ -33,7 +36,7 @@ else:
 f3 = str(subsample_fctr)
 f4 = str(num_times)
 
-mat_file = os.getcwd()+"/matData/"+"agg_"+f1+"_sims_"+f4+"_times_"+f3+"_ss_"+f2+".mat"
+mat_file = os.getcwd()+"/agg_matData/"+"agg_"+f1+"_sims_"+f4+"_times_"+f3+"_ss_"+f2+".mat"
 mdict = {"longitude": long, "latitude": lat,
          "zt": zt_full, "ocn_floor": zb,"sensor_loc_indices": sensor_loc_indices}
 sio.savemat(mat_file,mdict)
