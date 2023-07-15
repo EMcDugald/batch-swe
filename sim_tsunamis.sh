@@ -14,9 +14,12 @@ echo $num_runs
 mesh_file="cdfData/mesh_w_elev_cvt_7.nc"
 init_file="cdfData/initial_condition.nc"
 delete_nc=$2 #pass 1 if you want to save .nc files, 0 otherwise
-wait_until_first_detection=$3
-suppress_zero_sigs=$4
-regrid=$5
+wait_until_first_detection=$3 #passing 1 suppresses frames until a signal above 1e-3 is discovered
+suppress_zero_sigs=$4 #passing 1 eliminates sensor locations that never exceed 1e-3
+regrid=$5 #passing 1 interpolates the data onto a strucured grid
+subsample_fctr=$6 #passing n subsamples the output by n, ie arr[::n] or arr[::n,::n]
+num_times=$7 #passing n randomly selects n time slices to keep. passing 0 keeps all times
+agg_data=$8 #passing 1 aggregates all the data from the run
 long_arr=($(python3 -c 'from sample_epi import get_lons; print(str(get_lons()).replace("[","").replace("]","").replace("\n",""))'))
 lat_arr=($(python3 -c 'from sample_epi import get_lats; print(str(get_lats()).replace("[","").replace("]","").replace("\n",""))'))
 ids=($(python3 -c 'import sys, sample_epi; print(sample_epi.get_ids(sys.argv[1]).replace("[","").replace("]","").replace(",",""))' "$num_runs"))
@@ -69,7 +72,7 @@ do
     out_nc="cdfData/"$i_pad"_"$epi_long"_"$epi_lat".nc"
     echo "out nc: $out_nc"
 
-    python make_mat.py $i_pad $epi_long $epi_lat $wait_until_first_detection $suppress_zero_sigs $regrid
+    python make_mat.py $i_pad $epi_long $epi_lat $wait_until_first_detection $suppress_zero_sigs $regrid $subsample_fctr $num_times $agg_data
 
     # Delete initial condition file before next run
     rm $init_file
@@ -78,3 +81,7 @@ do
         rm $out_nc
     fi
 done
+
+if [ "$agg_data" = 1 ]; then
+  python agg_mats.py $regrid $subsample_fctr $num_times $num_runs
+fi

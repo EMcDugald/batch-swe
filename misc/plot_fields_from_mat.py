@@ -16,8 +16,6 @@ for i in range(len(data_dir)-1):
     fname = data_dir[fidx]
     data = sio.loadmat(proj+"/matData"+"/"+fname)
     data_id = fname.split("_")[0]
-    # if data_id in ['struct','unstruct']:
-    #     continue
 
     lon_id = fname.split("_")[1]
     if 'restruct' in fname:
@@ -52,7 +50,7 @@ for i in range(len(data_dir)-1):
     times= data['t']
     #fig, axs = plt.subplots(nrows=3, ncols=2,subplot_kw={'projection': ccrs.PlateCarree()})
     fig, axs = plt.subplots(nrows=4, ncols=3)
-    sampled_times = times[0][::round(len(times[0])/12)][0:12]
+    sampled_times = times[0][::round(len(times[0])/12)][0:6]
     lag = int(sampled_times[0])
     #for ax, t in zip(axs.flat, times[0:12]):
     for ax,t in zip(axs.flat, sampled_times):

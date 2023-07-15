@@ -25,7 +25,7 @@ for i in range(len(data_dir)-3):
     lon_id = fname.split("_")[1]
     lat_id = fname.split("_")[2].replace(".mat","")
 
-    if data_id in ['struct','unstruct']:
+    if data_id in ['struct','unstruct','agg']:
         continue
 
     z = data['zt']
