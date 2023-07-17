@@ -43,7 +43,6 @@ buoy_loc_arr = np.array([real_lon_locs,real_lat_locs]).T
 
 if regrid:
     print("making mat file with regridding")
-    mat_file = os.path.join(mat_path, ctr + "_" + str(epi_lon) + "_" + str(epi_lat) +"_ss_"+str(subsample_fctr) +"_restruct"+".mat")
     num_pts = dataset.dimensions['nCells'].size
     lat_size = round(np.sqrt(num_pts/2))
     lon_size = int(2*lat_size)
@@ -99,7 +98,6 @@ if regrid:
 
 else:
     print("making unstructured mat file")
-    mat_file = os.path.join(mat_path, ctr + "_" + str(epi_lon) + "_" + str(epi_lat) + "_ss_" + str(subsample_fctr) + ".mat")
     sim_lons = dataset.variables['lonCell'][:].data
     sim_lats = dataset.variables['latCell'][:].data
     zt = dataset.variables['zt_cell'][:].data
@@ -150,6 +148,13 @@ if num_times:
     sampled_ids = random.sample(all_ids,num_times)
     t = t[sampled_ids]
     zt = zt[sampled_ids,...]
+
+if regrid:
+    mat_file = os.path.join(mat_path, ctr + "_" + str(epi_lon) + "_" + str(epi_lat) + "_ss_" + str(
+        subsample_fctr) + "_ntimes_" + str(len(zt)) + "_struct" + ".mat")
+else:
+    mat_file = os.path.join(mat_path, ctr + "_" + str(epi_lon) + "_" + str(epi_lat) + "_ss_" + str(
+        subsample_fctr) + "_ntimes_" + str(len(zt)) + ".mat")
 
 print("number of times saved:",len(t))
 mdict = {"longitude": sim_lons, "latitude": sim_lats,
