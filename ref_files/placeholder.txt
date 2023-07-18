@@ -1,0 +1,1 @@
+Put the initial_condition.nc file made from solver here to use for cleaning csv data
