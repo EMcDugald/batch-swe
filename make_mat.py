@@ -56,10 +56,13 @@ if regrid:
     zt = np.asarray([griddata(upts,uzt[i],(sim_lons,sim_lats),method='cubic',fill_value=0) for i in range(len(uzt))])
     uzb = dataset.variables['zb_cell'][:].data
     zb = np.asarray(griddata(upts, uzb, (sim_lons, sim_lats), method='cubic', fill_value=0))
+    uismask = dataset.variables['is_mask'][:].data
+    ismask = np.asarray(griddata(upts, uismask, (sim_lons, sim_lats), method='nearest', fill_value=0))
     sim_lons = sim_lons[::subsample_fctr,::subsample_fctr]
     sim_lats = sim_lats[::subsample_fctr,::subsample_fctr]
     zt = zt[:,::subsample_fctr,::subsample_fctr]
     zb = zb[::subsample_fctr,::subsample_fctr]
+    ismask = ismask[::subsample_fctr,::subsample_fctr]
     # uke = dataset.variables['ke_cell'][:].data
     # ke = np.asarray([griddata(upts,uke[i],(slons_m,slats_m),method='cubic',fill_value=0) for i in range(len(uzt))])
     # udu_cell = dataset.variables['du_cell'][:].data
@@ -102,6 +105,7 @@ else:
     sim_lats = dataset.variables['latCell'][:].data
     zt = dataset.variables['zt_cell'][:].data
     zb = dataset.variables['zb_cell'][:].data
+    ismask = dataset.variables['is_mask'].data
     sim_lons = sim_lons[::subsample_fctr]
     sim_lats = sim_lats[::subsample_fctr]
     zt = zt[:,::subsample_fctr]
@@ -160,6 +164,7 @@ print("number of times saved:",len(t))
 mdict = {"longitude": sim_lons, "latitude": sim_lats,
          "zt": zt,
          "ocn_floor": zb,
+         "ismask": ismask,
          # "ke": ke[start:,...],
          # "du_cell": du_cell[start:,...],
          "sensor_loc_indices": sensor_indices,

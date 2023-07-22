@@ -16,6 +16,7 @@ data0 = sio.loadmat(pref+"/matData_temp/"+files[0])
 long = data0['longitude']
 lat = data0['latitude']
 zb = data0['ocn_floor']
+ismask = data0['ismask']
 sensor_loc_indices = data0['sensor_loc_indices']
 sensor_locs = data0['sensor_locs']
 zt_full = data0['zt']
@@ -36,7 +37,7 @@ f4 = str(num_times)
 f5 = str(len(zt_full))
 
 mat_file = os.getcwd()+"/matData/"+"agg_"+f1+"_sims_"+f4+"_time_ss_"+f3+"_ss_"+f2+"_ntimes_"+f5+".mat"
-mdict = {"longitude": long, "latitude": lat,
+mdict = {"longitude": long, "latitude": lat, "ismask": ismask,
          "zt": zt_full, "ocn_floor": zb,
          "sensor_loc_indices": sensor_loc_indices,
          "sensor_locs": sensor_locs}
