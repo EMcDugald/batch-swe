@@ -105,11 +105,12 @@ else:
     sim_lats = dataset.variables['latCell'][:].data
     zt = dataset.variables['zt_cell'][:].data
     zb = dataset.variables['zb_cell'][:].data
-    ismask = dataset.variables['is_mask'].data
+    ismask = dataset.variables['is_mask'][:].data
     sim_lons = sim_lons[::subsample_fctr]
     sim_lats = sim_lats[::subsample_fctr]
     zt = zt[:,::subsample_fctr]
     zb = zb[::subsample_fctr]
+    ismask = ismask[::subsample_fctr]
     # ke = dataset.variables['ke_cell'][:].data
     # du_cell = dataset.variables['du_cell'][:].data
 
