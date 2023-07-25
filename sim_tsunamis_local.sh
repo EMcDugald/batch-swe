@@ -49,8 +49,8 @@ do
     # Run swe.py on the initial condition. This will generate a .mat file identified with the epicenter and num_run
     printf -v i_pad "%03d" $i
     python solver/swe.py --mpas-file=$init_file \
-     --time-step=216. \
-     --num-steps=200 \
+     --time-step=108. \
+     --num-steps=400 \
      --save-freq=1 \
      --stat-freq=100 \
      --loglaw-z0=0.0025 \

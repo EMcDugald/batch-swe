@@ -76,6 +76,12 @@ if regrid:
     buoy_loc_arr[:, [1, 0]] = buoy_loc_arr[:, [0, 1]] #switch the column order, since lat is the row index
     print("dist from actual sensors:", np.linalg.norm(sensor_locs - buoy_loc_arr))
 
+    # for i, loc in zip(range(len(buoy_loc_arr)),buoy_loc_arr):
+    #     lon_idx, lat_idx = np.unravel_index((np.sqrt((sim_lons-loc[0])**2+(sim_lats-loc[1])**2)).argmin(), sim_lons.shape)
+    #     sensor_indices[i] = [int(lon_idx),int(lat_idx)]
+    #     sensor_locs[i] = [sim_lons[int(lon_idx),int(lat_idx)],sim_lats[int(lon_idx),int(lat_idx)]]
+    # print("dist from actual sensors:", np.linalg.norm(sensor_locs - buoy_loc_arr))
+
     start = 0
     if wait_until_first_detection:
         print("waiting until first detection")
