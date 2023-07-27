@@ -82,14 +82,17 @@ if regrid:
     ulats = dataset.variables['latCell'][:].data
     upts = np.array([ulons,ulats]).T
     uzt = dataset.variables['zt_cell'][:].data
-    zt = np.asarray([griddata(upts,uzt[i],(sim_lons,sim_lats),method='cubic',fill_value=0) for i in range(len(uzt))])
+    #zt = np.asarray([griddata(upts,uzt[i],(sim_lons,sim_lats),method='cubic',fill_value=0) for i in range(len(uzt))])
+    zt = np.asarray([griddata(upts, uzt[i], (sim_lons, sim_lats), method='nearest', fill_value=0) for i in range(len(uzt))])
     uzb = dataset.variables['zb_cell'][:].data
-    zb = np.asarray(griddata(upts, uzb, (sim_lons, sim_lats), method='cubic', fill_value=0))
+    #zb = np.asarray(griddata(upts, uzb, (sim_lons, sim_lats), method='cubic', fill_value=0))
+    zb = np.asarray(griddata(upts, uzb, (sim_lons, sim_lats), method='nearest', fill_value=0))
     uismask = dataset.variables['is_mask'][:].data
     ismask = np.asarray(griddata(upts, uismask, (sim_lons, sim_lats), method='nearest', fill_value=0))
     if with_div:
         udu = dataset.variables['uh_cell'][:].data
-        du = np.asarray([griddata(upts, udu[i], (sim_lons, sim_lats), method='cubic', fill_value=0) for i in range(len(udu))])
+        #du = np.asarray([griddata(upts, udu[i], (sim_lons, sim_lats), method='cubic', fill_value=0) for i in range(len(udu))])
+        du = np.asarray([griddata(upts, udu[i], (sim_lons, sim_lats), method='nearest', fill_value=0) for i in range(len(udu))])
     sim_lons = sim_lons[::subsample_fctr,::subsample_fctr]
     sim_lats = sim_lats[::subsample_fctr,::subsample_fctr]
     zt = zt[:,::subsample_fctr,::subsample_fctr]

@@ -30,7 +30,7 @@ for i in range(1,len(files)):
     zt_full = np.vstack((zt_full,zt))
     if with_div:
         du = mat['du']
-        du_full = np.vstack(du_full, du)
+        du_full = np.vstack((du_full,du))
 
 f1 = str(num_sims)
 if regrid:

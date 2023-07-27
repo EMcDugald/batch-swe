@@ -11,8 +11,10 @@ filterwarnings(action='ignore', category=DeprecationWarning, message='`np.bool` 
 proj = os.path.normpath(os.getcwd() + os.sep + os.pardir)
 data_dir = os.listdir(proj+"/matData")
 data_dir.sort()
-var = 'zt'
-#var = 'du'
+# var = 'zt'
+# mask_val = 1
+var = 'du'
+mask_val = 1e-3
 for i in range(len(data_dir)-1):
     fidx = i
     fname = data_dir[fidx]
@@ -22,7 +24,10 @@ for i in range(len(data_dir)-1):
     latitude = data['latitude']
 
     #z = data['zt']
-    f = data[var]
+    if var in data.keys():
+        f = data[var]
+    else:
+        continue
 
     if 'struct' in fname and 'unstruct' not in fname:
         sensor_lons = data['sensor_locs'][:,1]
@@ -43,13 +48,15 @@ for i in range(len(data_dir)-1):
         if 'struct' in fname and 'unstruct' not in fname:
             #zplt = np.where((data['ismask']==0),z[t,:,:,0],1)
             #field = ax.scatter(longitude, latitude, c=zplt, cmap='bwr')
-            fplt = np.where((data['ismask'] == 0), f[t, :, :, 0], 1)
+            fplt = np.where((data['ismask'] == 0), f[t, :, :, 0], mask_val)
             field = ax.scatter(longitude, latitude, c=fplt, cmap='bwr')
+            print(fname,np.min(fplt),np.max(fplt))
         else:
             #zplt = np.where((data['ismask']==0),z[t,:,0],1)
             #field = ax.scatter(longitude, latitude, c=zplt, cmap='bwr',s=.2)
-            fplt = np.where((data['ismask'] == 0), f[t, :, 0], 1)
+            fplt = np.where((data['ismask'] == 0), f[t, :, 0], mask_val)
             field = ax.scatter(longitude, latitude, c=fplt, cmap='bwr', s=.2)
+            print(fname,np.min(fplt), np.max(fplt))
         ax.scatter(sensor_lons, sensor_lats,color='k',s=.5)
         ax.set_title("t="+str(t))
         plt.colorbar(field,ax=ax)

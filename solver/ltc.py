@@ -1,4 +1,3 @@
-
 import time
 import numpy as np
 import xarray
@@ -7,24 +6,24 @@ import argparse
 from msh import load_mesh, cell_quad, dual_quad
 from ops import trsk_mats
 
+
 # SWE test cases for linear wave problems
 # Authors: Darren Engwirda
 
 def init(name, save, rsph, case, xmid, ymid, hmag):
-
-#------------------------------------ load an MPAS mesh file
+    # ------------------------------------ load an MPAS mesh file
 
     print("Loading the mesh file...")
 
     mesh = load_mesh(name, rsph)
 
-#------------------------------------ build TRSK matrix op's
+    # ------------------------------------ build TRSK matrix op's
 
     print("Forming coefficients...")
 
     trsk = trsk_mats(mesh)
 
-#------------------------------------ compute test-case IC's
+    # ------------------------------------ compute test-case IC's
 
     xmid = xmid * np.pi / 180.0
     ymid = ymid * np.pi / 180.0
@@ -39,22 +38,21 @@ def init(name, save, rsph, case, xmid, ymid, hmag):
 
 
 def ltc1(name, save, rsph, mesh, trsk, xmid, ymid, hmag):
+    # -- simple isolated gravity-wave test-case
 
-#-- simple isolated gravity-wave test-case
-
-    erot = 7.292E-05            # Earth's omega
-    grav = 9.80616              # gravity
+    erot = 7.292E-05  # Earth's omega
+    grav = 9.80616  # gravity
 
     uu_edge = np.zeros(mesh.edge.size, dtype=np.float64)
 
     hh_cell = hmag * np.exp(
-            - 100. * (mesh.cell.xlon - xmid) ** 2 + \
-            - 100. * (mesh.cell.ylat - ymid) ** 2 ) \
-            + 500.0
+        - 100. * (mesh.cell.xlon - xmid) ** 2 + \
+        - 100. * (mesh.cell.ylat - ymid) ** 2) \
+              + 500.0
 
     zb_cell = np.zeros(mesh.cell.size, dtype=np.float64)
 
-#-- inject mesh with IC.'s and write output MPAS netCDF file
+    # -- inject mesh with IC.'s and write output MPAS netCDF file
 
     print("Output written to:", save)
 
@@ -93,11 +91,11 @@ def ltc1(name, save, rsph, mesh, trsk, xmid, ymid, hmag):
         np.zeros((1, mesh.cell.size, 1, 1)))
 
     init["fCell"] = (("nCells"),
-        2.00E+00 * erot * np.sin(mesh.cell.ylat))
+                     2.00E+00 * erot * np.sin(mesh.cell.ylat))
     init["fEdge"] = (("nEdges"),
-        2.00E+00 * erot * np.sin(mesh.edge.ylat))
+                     2.00E+00 * erot * np.sin(mesh.edge.ylat))
     init["fVertex"] = (("nVertices"),
-        2.00E+00 * erot * np.sin(mesh.vert.ylat))
+                       2.00E+00 * erot * np.sin(mesh.vert.ylat))
 
     print(init)
 
@@ -107,59 +105,35 @@ def ltc1(name, save, rsph, mesh, trsk, xmid, ymid, hmag):
 
 
 def ltc2(name, save, rsph, mesh, trsk, xmid, ymid, hmag):
+    # -- earth-topography tsunami-wave test-case
 
-#-- earth-topography tsunami-wave test-case
-
-    erot = 7.292E-05            # Earth's omega
-    grav = 9.80616              # gravity
+    erot = 7.292E-05  # Earth's omega
+    grav = 9.80616  # gravity
 
     data = xarray.open_dataset(name)
 
     if ("bed_elevation" not in data.variables.keys()):
         raise ValueError("Elevation data not found.")
 
-    if ("ocn_cover" not in data.variables.keys()):
-        raise ValueError("Ocn.-mask data not found.")
-
     if ("ice_thickness" not in data.variables.keys()):
         raise ValueError("Elevation data not found.")
 
-    oc_mask = np.asarray(
-        data["ocn_cover"][:], dtype=np.float32)
-
     zb_cell = np.asarray(
         data["bed_elevation"][:], dtype=np.float64)
-    zb_cell+= np.asarray(
+    zb_cell += np.asarray(
         data["ice_thickness"][:], dtype=np.float64)
 
-    zb_cell[oc_mask >= 0.375] = \
-        np.minimum(-5.0, zb_cell[oc_mask >= 0.375])
-
-    #the above version is from darren, the one i'm using here makes it easier to see in paraview
-    #zb_cell = np.minimum(-10.0, zb_cell)
+    # originally uncommented...
+    zb_cell = np.minimum(-10.0, zb_cell)  # not too shallow
 
     uu_edge = np.zeros(mesh.edge.size, dtype=np.float64)
 
-    """
-    hh_cell = -zb_cell + hmag * np.exp( -1. * (
-            250.0 * (mesh.cell.xlon - xmid) ** 2 + \
-            250.0 * (mesh.cell.ylat - ymid) ** 2
-            ) ** 4 )
-    """
+    hh_cell = -zb_cell + hmag * np.exp(-1. * (
+            250. * (mesh.cell.xlon - xmid) ** 2 + \
+            250. * (mesh.cell.ylat - ymid) ** 2
+    ) ** 4)
 
-    """
-    hh_cell = -zb_cell + hmag * np.exp( -1. * (
-            25000 * (mesh.cell.xlon - xmid) ** 2 + \
-            250.0 * (mesh.cell.ylat - ymid) ** 2
-            ) ** 4 )
-    """
-
-    hh_cell = -zb_cell + hmag * np.exp( -1. * (
-            250.0 * (mesh.cell.xlon - xmid) ** 2 + \
-            50000 * (mesh.cell.ylat - ymid) ** 2
-            ) ** 4 )
-
-#-- inject mesh with IC.'s and write output MPAS netCDF file
+    # -- inject mesh with IC.'s and write output MPAS netCDF file
 
     print("Output written to:", save)
 
@@ -198,13 +172,13 @@ def ltc2(name, save, rsph, mesh, trsk, xmid, ymid, hmag):
         np.zeros((1, mesh.cell.size, 1, 1)))
 
     init["fCell"] = (("nCells"),
-        2.00E+00 * erot * np.sin(mesh.cell.ylat))
+                     2.00E+00 * erot * np.sin(mesh.cell.ylat))
     init["fEdge"] = (("nEdges"),
-        2.00E+00 * erot * np.sin(mesh.edge.ylat))
+                     2.00E+00 * erot * np.sin(mesh.edge.ylat))
     init["fVertex"] = (("nVertices"),
-        2.00E+00 * erot * np.sin(mesh.vert.ylat))
+                       2.00E+00 * erot * np.sin(mesh.vert.ylat))
 
-    init["is_mask"] = (("nCells"), oc_mask<0.375)
+    init["is_mask"] = (("nCells"), zb_cell >= -10.0)
 
     print(init)
 
