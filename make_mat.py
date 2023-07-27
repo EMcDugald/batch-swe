@@ -1,4 +1,5 @@
 from netCDF4 import Dataset as netcdf_dataset
+import netCDF4
 import scipy.io as sio
 import os
 import sys
@@ -19,6 +20,7 @@ regrid = int(sys.argv[6])
 subsample_fctr = int(sys.argv[7])
 num_times = int(sys.argv[8])
 agg_data = int(sys.argv[9])
+with_div = int(sys.argv[10])
 
 print("Making mat file")
 nc_path = os.getcwd()+"/cdfData/"
@@ -28,7 +30,34 @@ if agg_data:
     mat_path = os.getcwd()+"/matData_temp/"
 else:
     mat_path = os.getcwd()+"/matData/"
+
 nc_file = os.path.join(nc_path, ctr + "_" + str(epi_lon) + "_" + str(epi_lat) + ".nc")
+
+### Getting zt_pred here ###
+# flow = netCDF4.Dataset(nc_file, "a", format="NETCDF4")
+# dt = flow.time_step
+# hh_cell = np.asarray(flow["hh_cell"])
+# zb_cell = np.asarray(flow["zb_cell"])
+# uh_cell = np.asarray(flow["uh_cell"])
+# # eval. at half step, so that the predictor is 2nd-order accurate
+# uh_cell_mid = 0. * uh_cell
+# uh_cell_mid[:-1, :, :] = 0.5 * (uh_cell[:-1, :, :] + uh_cell[1:, :, :])
+# # dh/dt + div(u*h) = 0
+# hf_cell = hh_cell - dt * uh_cell_mid
+# zt_pred = hf_cell[:, :, 0] + zb_cell
+# # move up by 1 to sync time-step
+# zt_pred[1:, :] = zt_pred[:-1, :]
+# zt_pred[0, :] = zt_pred[0, :]
+# if ("zt_pred" not in flow.variables.keys()):
+#     flow.createVariable(
+#         "zt_pred", "f4", ("Time", "nCells", "nVertLevels"))
+#     flow["zt_pred"].long_name = \
+#         "Prediction of top surface elevation"
+# flow["zt_pred"][:] = np.reshape(
+#     zt_pred, (zt_pred.shape[0], zt_pred.shape[1], 1))
+# flow.close()
+### END ZTPRED ###
+
 dataset = netcdf_dataset(nc_file)
 
 numt = dataset.dimensions['Time'].size
@@ -58,11 +87,16 @@ if regrid:
     zb = np.asarray(griddata(upts, uzb, (sim_lons, sim_lats), method='cubic', fill_value=0))
     uismask = dataset.variables['is_mask'][:].data
     ismask = np.asarray(griddata(upts, uismask, (sim_lons, sim_lats), method='nearest', fill_value=0))
+    if with_div:
+        udu = dataset.variables['uh_cell'][:].data
+        du = np.asarray([griddata(upts, udu[i], (sim_lons, sim_lats), method='cubic', fill_value=0) for i in range(len(udu))])
     sim_lons = sim_lons[::subsample_fctr,::subsample_fctr]
     sim_lats = sim_lats[::subsample_fctr,::subsample_fctr]
     zt = zt[:,::subsample_fctr,::subsample_fctr]
     zb = zb[::subsample_fctr,::subsample_fctr]
     ismask = ismask[::subsample_fctr,::subsample_fctr]
+    if with_div:
+        du = du[:, ::subsample_fctr, ::subsample_fctr]
     # uke = dataset.variables['ke_cell'][:].data
     # ke = np.asarray([griddata(upts,uke[i],(slons_m,slats_m),method='cubic',fill_value=0) for i in range(len(uzt))])
     # udu_cell = dataset.variables['du_cell'][:].data
@@ -91,6 +125,8 @@ if regrid:
         start = np.argmax(sens_abs_max > 1e-3)
         zt = zt[start:, ...]
         t = t[start:]
+        if with_div:
+            du = du[start:,...]
 
     # only save sensor indices that have non-trivial readings
     if suppress_zero_sigs:
@@ -117,6 +153,9 @@ else:
     zt = zt[:,::subsample_fctr]
     zb = zb[::subsample_fctr]
     ismask = ismask[::subsample_fctr]
+    if with_div:
+        du = dataset.variables['uh_cell'][:].data
+        du = du[:, ::subsample_fctr]
     # ke = dataset.variables['ke_cell'][:].data
     # du_cell = dataset.variables['du_cell'][:].data
 
@@ -141,6 +180,8 @@ else:
         start = np.argmax(sens_abs_max>1e-3)
         zt = zt[start:, ...]
         t = t[start:]
+        if with_div:
+            du = du[start:,...]
 
     #only save sensor indices that have non-trivial readings
     if suppress_zero_sigs:
@@ -159,24 +200,44 @@ if num_times:
     sampled_ids = random.sample(all_ids,num_times)
     t = t[sampled_ids]
     zt = zt[sampled_ids,...]
+    if with_div:
+        du = du[sampled_ids,...]
 
 if regrid:
     mat_file = os.path.join(mat_path, ctr + "_" + str(epi_lon) + "_" + str(epi_lat) + "_ss_" + str(
-        subsample_fctr) + "_ntimes_" + str(len(zt)) + "_struct" + ".mat")
+        subsample_fctr) + "_ntimes_" + str(len(zt)) + "_struct")
 else:
     mat_file = os.path.join(mat_path, ctr + "_" + str(epi_lon) + "_" + str(epi_lat) + "_ss_" + str(
-        subsample_fctr) + "_ntimes_" + str(len(zt)) + ".mat")
+        subsample_fctr) + "_ntimes_" + str(len(zt)))
+
+if with_div:
+    mat_file = mat_file + "_wd.mat"
+else:
+    mat_file = mat_file + ".mat"
 
 print("number of times saved:",len(t))
-mdict = {"longitude": sim_lons, "latitude": sim_lats,
-         "zt": zt,
-         "ocn_floor": zb,
-         "ismask": ismask,
-         # "ke": ke[start:,...],
-         # "du_cell": du_cell[start:,...],
-         "sensor_loc_indices": sensor_indices,
-         "sensor_locs": sensor_locs,
-         "t": t}
+if with_div:
+    mdict = {"longitude": sim_lons, "latitude": sim_lats,
+             "zt": zt,
+             "du": du,
+             "ocn_floor": zb,
+            "ismask": ismask,
+            # "ke": ke[start:,...],
+            # "du_cell": du_cell[start:,...],
+            "sensor_loc_indices": sensor_indices,
+            "sensor_locs": sensor_locs,
+            "t": t}
+else:
+    mdict = {"longitude": sim_lons, "latitude": sim_lats,
+             "zt": zt,
+             "ocn_floor": zb,
+             "ismask": ismask,
+             # "ke": ke[start:,...],
+             # "du_cell": du_cell[start:,...],
+             "sensor_loc_indices": sensor_indices,
+             "sensor_locs": sensor_locs,
+             "t": t}
+
 sio.savemat(mat_file,mdict)
 
 

@@ -11,6 +11,8 @@ filterwarnings(action='ignore', category=DeprecationWarning, message='`np.bool` 
 proj = os.path.normpath(os.getcwd() + os.sep + os.pardir)
 data_dir = os.listdir(proj+"/matData")
 data_dir.sort()
+var = 'zt'
+#var = 'du'
 for i in range(len(data_dir)-1):
     fidx = i
     fname = data_dir[fidx]
@@ -19,7 +21,8 @@ for i in range(len(data_dir)-1):
     longitude = data['longitude']
     latitude = data['latitude']
 
-    z = data['zt']
+    #z = data['zt']
+    f = data[var]
 
     if 'struct' in fname and 'unstruct' not in fname:
         sensor_lons = data['sensor_locs'][:,1]
@@ -29,7 +32,8 @@ for i in range(len(data_dir)-1):
         sensor_lats = data['sensor_locs'][:,1]
 
     if "agg" in fname:
-        times = np.arange(0,len(z),1).tolist()
+        #times = np.arange(0,len(z),1).tolist()
+        times = np.arange(0,len(f),1).tolist()
         sampled_times = range(len(times))[::round(len(times) / 6)]
     else:
         times= data['t']
@@ -37,18 +41,22 @@ for i in range(len(data_dir)-1):
     fig, axs = plt.subplots(nrows=3, ncols=2)
     for ax,t in zip(axs.flat, sampled_times):
         if 'struct' in fname and 'unstruct' not in fname:
-            zplt = np.where((data['ismask']==0),z[t,:,:,0],1)
-            field = ax.scatter(longitude, latitude, c=zplt, cmap='bwr')
+            #zplt = np.where((data['ismask']==0),z[t,:,:,0],1)
+            #field = ax.scatter(longitude, latitude, c=zplt, cmap='bwr')
+            fplt = np.where((data['ismask'] == 0), f[t, :, :, 0], 1)
+            field = ax.scatter(longitude, latitude, c=fplt, cmap='bwr')
         else:
-            zplt = np.where((data['ismask']==0),z[t,:,0],1)
-            field = ax.scatter(longitude, latitude, c=zplt, cmap='bwr',s=.2)
+            #zplt = np.where((data['ismask']==0),z[t,:,0],1)
+            #field = ax.scatter(longitude, latitude, c=zplt, cmap='bwr',s=.2)
+            fplt = np.where((data['ismask'] == 0), f[t, :, 0], 1)
+            field = ax.scatter(longitude, latitude, c=fplt, cmap='bwr', s=.2)
         ax.scatter(sensor_lons, sensor_lats,color='k',s=.5)
         ax.set_title("t="+str(t))
         plt.colorbar(field,ax=ax)
     fig.set_figheight(int(3*(2+1)))
     fig.set_figwidth(int(2*(4+1)))
     plt.tight_layout()
-    savepath = proj+"/figs/fields/"+fname.replace(".mat",".png")
+    savepath = proj+"/figs/fields/"+var+"_"+fname.replace(".mat",".png")
     plt.savefig(savepath)
     plt.close()
 

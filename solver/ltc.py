@@ -135,6 +135,9 @@ def ltc2(name, save, rsph, mesh, trsk, xmid, ymid, hmag):
     zb_cell[oc_mask >= 0.375] = \
         np.minimum(-5.0, zb_cell[oc_mask >= 0.375])
 
+    #the above version is from darren, the one i'm using here makes it easier to see in paraview
+    #zb_cell = np.minimum(-10.0, zb_cell)
+
     uu_edge = np.zeros(mesh.edge.size, dtype=np.float64)
 
     """
