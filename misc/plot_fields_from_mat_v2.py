@@ -27,11 +27,17 @@ t = 450
 
 fig, ax = plt.subplots(nrows=1, ncols=1)
 if 'struct' in fname and 'unstruct' not in fname:
-    mask_val = np.max(np.abs(f[t, :, :, 0]))
+    #mask_val = np.max(np.abs(f[t, :, :, 0]))
+    minf = np.min(f[t, :, :, 0])
+    maxf = np.max(f[t, :, :, 0])
+    mask_val = min(np.abs(minf),np.abs(maxf))
     fplt = np.where((data['ismask'] == 0), f[t, :, :, 0], mask_val)
     field = ax.scatter(longitude, latitude, c=fplt, cmap='bwr',clim=[-mask_val,mask_val])
 else:
-    mask_val = np.max(np.abs(f[t,:, 0]))
+    #mask_val = np.max(np.abs(f[t,:, 0]))
+    minf = np.min(f[t,:,0])
+    maxf = np.max(f[t,:,0])
+    mask_val = min(np.abs(minf),np.abs(maxf))
     fplt = np.where((data['ismask'] == 0), f[t, :, 0], mask_val)
     field = ax.scatter(longitude, latitude, c=fplt, cmap='bwr', s=.2,clim=[-mask_val,mask_val])
 ax.scatter(sensor_lons, sensor_lats,color='k',s=.5)
