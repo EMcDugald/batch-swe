@@ -1,7 +1,10 @@
 #!/bin/bash
 
-lon_arr=("166.5160" )
-lat_arr=("-13.9660")
+lon_arr=("136.6180" "142.6190" "143.9100" "139.5560" "143.7300" "139.3290" )
+lat_arr=("33.0700" "37.8120" "41.8150" "28.8560" "22.3380" "28.9320")
+
+#lon_arr=("136.6180" "142.6190")
+#lat_arr=("33.0700" "37.8120")
 
 mesh_file="cdfData/mesh_w_elev_cvt_7.nc"
 init_file="cdfData/initial_condition.nc"
@@ -13,8 +16,6 @@ subsample_fctr=$5 #passing n subsamples the output by n, ie arr[::n] or arr[::n,
 num_times=$6 #passing n randomly selects n time slices to keep. passing 0 keeps all times
 agg_data=$7 #passing 1 aggregates all the data from the run
 with_div=$8 #passing 1 includes velocity divergence
-lon_arr=("166.5160" )
-lat_arr=("-13.9660")
 num_runs=${#lon_arr[@]}
 echo "epicenter sampling indices: ${ids[@]}"
 
@@ -43,7 +44,7 @@ do
     printf -v i_pad "%03d" $i
     python solver/swe.py --mpas-file=$init_file \
      --time-step=54. \
-     --num-steps=800 \
+     --num-steps=200 \
      --save-freq=1 \
      --stat-freq=100 \
      --loglaw-z0=0.0025 \
