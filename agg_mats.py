@@ -13,6 +13,7 @@ pref = os.getcwd()
 files = os.listdir(pref+"/matData_temp")
 files.sort()
 
+data_idx = []
 data0 = sio.loadmat(pref+"/matData_temp/"+files[0])
 long = data0['longitude']
 lat = data0['latitude']
@@ -23,11 +24,13 @@ sensor_locs = data0['sensor_locs']
 zt_full = data0['zt']
 if with_div:
     du_full = data0['du']
-time_steps, *pixels, ch = np.shape(zt_full)
+time_steps = len(zt_full)
+data_idx = [time_steps]
 for i in range(1,len(files)):
     mat = sio.loadmat(pref+"/matData_temp/"+files[i])
     zt = mat['zt']
     zt_full = np.vstack((zt_full,zt))
+    data_idx.append(len(zt))
     if with_div:
         du = mat['du']
         du_full = np.vstack((du_full,du))
@@ -52,13 +55,13 @@ if with_div:
              "ismask": ismask, "du": du_full,
              "zt": zt_full, "ocn_floor": zb,
              "sensor_loc_indices": sensor_loc_indices,
-            "sensor_locs": sensor_locs}
+            "sensor_locs": sensor_locs, "data_times": data_idx}
 else:
     mdict = {"longitude": long, "latitude": lat,
              "ismask": ismask,
              "zt": zt_full, "ocn_floor": zb,
              "sensor_loc_indices": sensor_loc_indices,
-             "sensor_locs": sensor_locs}
+             "sensor_locs": sensor_locs, "data_times": data_idx}
 sio.savemat(mat_file,mdict)
 
 
