@@ -6,6 +6,9 @@ import pandas as pd
 import numpy as np
 from scipy.interpolate import griddata
 import random
+import warnings
+warnings.filterwarnings("ignore")
+from sklearn.cluster import KMeans
 
 from warnings import filterwarnings
 filterwarnings(action='ignore', category=DeprecationWarning, message='`np.bool` is a deprecated alias')
@@ -20,6 +23,7 @@ subsample_fctr = int(sys.argv[7])
 num_times = int(sys.argv[8])
 agg_data = int(sys.argv[9])
 with_div = int(sys.argv[10])
+artificial_sensors = int(sys.argv[11])
 
 print("Making mat file")
 nc_path = os.getcwd()+"/cdfData/"
@@ -42,6 +46,24 @@ buoys_df['corrected_lons'] = buoys_df['longitude'].apply(lambda x: 360.+x if x<0
 real_lon_locs = buoys_df['corrected_lons'].to_numpy()*np.pi/180.
 real_lat_locs = buoys_df['latitude'].to_numpy()*np.pi/180.
 buoy_loc_arr = np.array([real_lon_locs,real_lat_locs]).T
+if artificial_sensors != 0:
+    dir = os.getcwd() + "/csvData/"
+    fname = "eq_gt_7_depth_gt_1000_npac.csv"
+    epi_df = pd.read_csv(dir + fname, sep=',')
+    df = epi_df[epi_df['place'].str.contains("Japan", na=False)]
+    df = df[['place', 'corrected_lons', 'latitude']]
+    coords = np.array(list(zip(df.corrected_lons, df.latitude)))
+    kmeans = KMeans(n_clusters=artificial_sensors, random_state=0)
+    kmeans.fit(coords)
+    art_lons = kmeans.cluster_centers_[:,0]
+    art_lats = kmeans.cluster_centers_[:,1]
+    art_lons *= np.pi / 180.
+    art_lats *= np.pi / 180.
+    art_sens = np.array([art_lons, art_lats]).T
+    buoy_loc_arr = np.vstack((buoy_loc_arr, art_sens))
+
+
+
 
 if regrid:
     print("making mat file with regridding")

@@ -5,12 +5,12 @@
 #lat_arr=("33.0700" "37.8120" "41.8150" "28.8560" "22.3380" "28.9320" "22.0130" "27.9290" "29.3840" "33.4530" "41.5080" "40.3280" "24.3190" "33.1570" "36.9710" "40.5910" "35.9360" "35.2670" "38.4170" "39.5030")
 
 ##8 epicenters- more localized approach
-lon_arr=("136.6180" "139.5560" "139.3290" "138.9350" "140.9290" "135.7400" "141.5010" "142.3870")
-lat_arr=("33.0700" "28.8560" "28.9320" "29.3840" "33.4530" "33.1570" "35.9360" "35.2670")
+#lon_arr=("136.6180" "139.5560" "139.3290" "138.9350" "140.9290" "135.7400" "141.5010" "142.3870")
+#lat_arr=("33.0700" "28.8560" "28.9320" "29.3840" "33.4530" "33.1570" "35.9360" "35.2670")
 
 #4 nearby epicenters
-#lon_arr=("136.6500" "140.2000" "138.9000" "139.5000")
-#lat_arr=("33.1000" "29.1000" "28.1000" "28.8000")
+lon_arr=("136.6500" "140.2000" "138.9000" "139.5000")
+lat_arr=("33.1000" "29.1000" "28.1000" "28.8000")
 
 mesh_file="cdfData/mesh_w_elev_cvt_7.nc"
 init_file="cdfData/initial_condition.nc"
@@ -23,6 +23,7 @@ num_times=$6 #passing n randomly selects n time slices to keep. passing 0 keeps 
 agg_data=$7 #passing 1 aggregates all the data from the run
 with_div=$8 #passing 1 includes velocity divergence
 split_times=$9 #pass 0  to agg all data, pass n to split into n equally spaced time intervals
+artificial_sens=${10} #pass 0 to keep only real sensors, pass n to create n artifical sensors
 num_runs=${#lon_arr[@]}
 echo "epicenter sampling indices: ${ids[@]}"
 
@@ -51,7 +52,7 @@ do
     printf -v i_pad "%03d" $i
     python solver/swe.py --mpas-file=$init_file \
      --time-step=50. \
-     --num-steps=864 \
+     --num-steps=432 \
      --save-freq=1 \
      --stat-freq=100 \
      --loglaw-z0=0.0025 \
@@ -65,7 +66,7 @@ do
     out_nc="cdfData/"$i_pad"_"$epi_long"_"$epi_lat".nc"
     echo "out nc: $out_nc"
 
-    python make_mat.py $i_pad $epi_long $epi_lat $wait_until_first_detection $suppress_zero_sigs $regrid $subsample_fctr $num_times $agg_data $with_div
+    python make_mat.py $i_pad $epi_long $epi_lat $wait_until_first_detection $suppress_zero_sigs $regrid $subsample_fctr $num_times $agg_data $with_div $artificial_sens
 
     # Delete initial condition file before next run
     rm $init_file
